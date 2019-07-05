@@ -89,3 +89,16 @@ git  commit -m "delete data"
 git push -u origin master
 ```
 
+# 12.分支创建与推送到远程分支
+
+```
+创建本地分支
+git checkout -b develop
+把本地分支push到远程
+git push origin develop
+查看分支
+git branch
+合并到主分支
+git merge master
+```
+
