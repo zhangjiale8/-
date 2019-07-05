@@ -230,4 +230,3 @@ byte、short、int、long、float、double、char、boolean
 
 
 
-set classpath=.;c:\;e:\
