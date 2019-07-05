@@ -317,3 +317,4 @@ list.appendChild(node);
 ```
 
   注：当点击item4时，item4有事件响应。说明事件委托可以为新添加的DOM元素动态的添加事件。
+
