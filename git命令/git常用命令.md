@@ -100,5 +100,7 @@ git push origin develop
 git branch
 合并到主分支
 git merge master
+本地分支关联远程分支
+git branch --set-upstream-to=origin/develop develop
 ```
 
