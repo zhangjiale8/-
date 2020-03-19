@@ -72,7 +72,7 @@ ConcurrentHashMap 相对于1.6 中基本没有发生变化。
 
 优化点：解决碰撞过多的问题，理想情况下6和7中的实现碰撞是较少的，在底层结构看起来也就是链表的长度较短。但现实使用中并没法保证是在理想情况下或正常情况下工作的，所以经常出现链表长度很长，导致性能逐渐下降，并且有的还没开始使用，从一定角度上来说属于资源的分配不均，存在一定的浪费。针对这个问题，1.8中设定了一个阀值（8），当链表长度大于8时使用红黑树进行替换。也就是使用红黑树的方式减小碰撞所带来的代价（O(n) 到 O(logn)）
 
-![img](https:////upload-images.jianshu.io/upload_images/4035167-c2aed5b8017bdd4f.png?imageMogr2/auto-orient/strip|imageView2/2/w/434/format/webp)
+![img](image\链表长度大于8时使用红黑树进行替换01.png)
 
 然后Hash算法更改为：XORs，扩容算法更改为：ewThr<<1,然后懒加载的特性仍然保留，第一次put的时候才真正的new。
 
@@ -82,15 +82,15 @@ key&value都不允许为空，从1.8开始出现前置检查，并且舍弃concu
 
 下面是putVal中的CAS+Sychronized的使用，putval也是整个ConcurrentHashMap中比较核心的，推荐详细去看一下，因为篇幅，只说里面的一两点。
 
-![img](https:////upload-images.jianshu.io/upload_images/4035167-ceac685693303c22.png?imageMogr2/auto-orient/strip|imageView2/2/w/594/format/webp)
+![img](image\putVal中的CAS+Sychronized01.png)
 
 
 
-![img](https:////upload-images.jianshu.io/upload_images/4035167-f43cbbbbe1749367.png?imageMogr2/auto-orient/strip|imageView2/2/w/678/format/webp)
+![img](image\putVal中的CAS+Sychronized02.png)
 
 具体的hash算法：
 
-![img](https:////upload-images.jianshu.io/upload_images/4035167-d24c6d9a385b8524.png?imageMogr2/auto-orient/strip|imageView2/2/w/369/format/webp)
+![img](image\putVal中的CAS+Sychronized03.png)
 
 再然后取元素时，利用了类似于volatile特性的UnSafe.getObjectVolatile()，保证取到的为最新值。
 

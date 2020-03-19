@@ -12,7 +12,7 @@ List中主要有ArrayList、LinkedList两个实现类；Set中则是有HashSet�
 
 Map同属于java.util包中，是集合的一部分，但与Collection是相互独立的，没有任何关系。Map中都是以key-value的形式存在，其中key必须唯一，主要有HashMap、HashTable、TreeMap三个实现类。
 
-![img](学习笔记\java笔记\集合\知识点\image\集合分类图.png)
+![img](image\集合分类图.png)
 
 **List**
 
@@ -95,7 +95,7 @@ Object[] toArray():把集合变成数组。
 
 
 
-```cpp
+```java
 public class ArrayListTest {
     public static void main(String[] agrs){
         //创建ArrayList集合：
@@ -152,7 +152,7 @@ public class ArrayListTest {
 
 
 
-```csharp
+```java
 public class LinkedListTest {
     public static void main(String[] agrs){
         List<String> linkedList = new LinkedList<String>();
@@ -209,7 +209,7 @@ public class LinkedListTest {
 
 
 
-```csharp
+```java
 public class ListTest {
 
     //迭代次数
@@ -465,7 +465,7 @@ private static int hugeCapacity(int minCapacity) {
 
 
 
-```csharp
+```java
 //在ArrayList的移除index位置的元素
 public E remove(int index) {
     //检查角标是否合法：不合法抛异常
@@ -526,8 +526,6 @@ private void fastRemove(int index) {
 
 由于ArrayList实现了RandomAccess，所以具备了随机访问特性，调用elementData()可以获取到对应元素的值；
 
-
-
 ```cpp
 //设置index位置的元素值了element，返回该位置的之前的值
 public E set(int index, E element) {
@@ -546,9 +544,7 @@ public E set(int index, E element) {
 
 通过elementData()方法获取对应角标元素，在返回时候进行类型转换；
 
-
-
-```cpp
+```java
 //获取index位置的元素
 public E get(int index) {
     //检查index是否合法：
@@ -572,15 +568,11 @@ E elementData(int index) {
 
 AbstractList类当中定义的变量：
 
-
-
 ```java
 protected transient int modCount = 0;
 ```
 
 ArrayList获取迭代器对象：
-
-
 
 ```csharp
 //返回一个Iterator对象，Itr为ArrayList的一个内部类，其实现了Iterator<E>接口
@@ -590,8 +582,6 @@ public Iterator<E> iterator() {
 ```
 
 迭代器实现：
-
-
 
 ```java
 //Itr实现了Iterator接口，是ArrayList集合的迭代器对象
@@ -717,7 +707,7 @@ ArrayList在序列化时会调用writeObject()，直接将elementData写入Objec
 
 
 
-```tsx
+```java
 public static <T,U> T[] copyOf(U[] original, int newLength, Class<? extends T[]> newType) {
     T[] copy = ((Object)newType == (Object)Object[].class)
         ? (T[]) new Object[newLength]
@@ -889,7 +879,7 @@ void linkBefore(E e, java.util.LinkedList.Node<E> succ) {
 
 修改该Node节点的前后Node节点中pre/next属性，使其指向该节点。
 
-![img](https:////upload-images.jianshu.io/upload_images/5621908-b9b9a5292a25c6cd.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/878/format/webp)
+![img](image\LinkedList实现图02.png)
 
 - remove()
 
@@ -968,9 +958,7 @@ LinkedList的set(int index, E element)方法与add(int index,E element)的设计
 
 可以看到，node（）中是根据角标的大小是选择从前遍历还是从后遍历整个集合。也可以间接的说明，LinkedList在随机获取元素时性能很低，每次的获取都得从头或者从尾遍历半个集合。
 
-
-
-```csharp
+```java
 //设置对应角标的元素：
 public E set(int index, E element) {
     checkElementIndex(index);
@@ -1011,7 +999,7 @@ get(int index)
 
 
 
-```cpp
+```java
 //获取相应角标的元素：
 public E get(int index) {
     //检查角标是否正确：
@@ -1027,14 +1015,12 @@ public E get(int index) {
 
 
 
-```dart
+```java
 List<String> linkedList = new LinkedList<String>();
 Iterator<String> iterator =  linkedList.iterator();
 ```
 
 父类AbstractSequentialList中的 iterator():
-
-
 
 ```java
 public abstract class AbstractSequentialList<E> extends AbstractList<E> {
@@ -1045,8 +1031,6 @@ public abstract class AbstractSequentialList<E> extends AbstractList<E> {
 ```
 
 父类AbstractList中的 listIterator()：
-
-
 
 ```java
 public abstract class AbstractList<E> extends AbstractCollection<E> implements List<E> {            
