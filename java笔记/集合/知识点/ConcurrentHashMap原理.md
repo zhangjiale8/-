@@ -1,5 +1,7 @@
 ConcurrentHashMap原理。
 
+put操作在单个segment内部加锁，继承ReentrantLock 并执行tryLock 和 unlock
+
 ### 1.1ConcurrentHashMap初始化
 
 我们首先，来看下ConcurrentHashMap中的主要成员变量；
