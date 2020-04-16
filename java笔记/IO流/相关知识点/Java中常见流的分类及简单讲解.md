@@ -1,4 +1,4 @@
-# 1.Java中常见流的分类及简单讲解
+# 1 流分类
 
 
 
@@ -8,39 +8,43 @@
 
 **从外部设备流向中央处理器的数据流成为“输入流”，反之成为“输出流”。**
 
-**字符流和字节流的主要区别：**
+## 1.1 字符流和字节流的主要区别：
 
  1.字节流读取的时候，读到一个字节就返回一个字节；字符流使用了字节流读到一个或多个字节（中文对应的字节数是两个，在UTF-8码表中是3个字节）时。先去查指定的编码表，将查到的字符返回。
 
  2.字节流可以处理所有类型数据，如：图片，MP3，AVI视频文件，而字符流只能处理字符数据。只要是处理纯文本数据，就要优先考虑使用字符流，除此之外都用字节流。
 
-**1.字节流：**
+# 2 字节流：
 
-**字节输入流类：FileInputStream、BufferedInputStream和DataInputStream**
+## 2.1 字节输入流类：FileInputStream、BufferedInputStream和DataInputStream
 
-**FileInputStream:此类用于从本地文件系统中读取文件内容。**
+### 2.1.1 FileInputStream:
 
-构造方法：
+​	此类用于从本地文件系统中读取文件内容。
+
+#### 2.1.1.1 构造方法：
 
 ·FileInputStream(File file):打开一个到实际文件的连接来创建一个FileInputStream，该文件通过文件系统中的File对象file指定。
 
 ·FileInputStream(String name):打开一个到实际文件的连接来创建一个FileInputStream，该文件通过文件系统中的路径名name指定。
 
-常用方法：
+#### 2.1.1.2 常用方法：
 
 ·int available():返回下一次对此输入流调用的方法不受阻塞地从此输入流读取（或跳过）的估计剩余字节数。
 
 ·void close():关闭此文件输入流并释放与该流关联的所有系统资源。
 
-**BufferedInputStream：此类本身带有一个缓冲区，在读取数据时，先放到缓冲区中，可以减少对数据源的访问，提高运行的效率。**
+### 2.1.2 BufferedInputStream：
 
-构造方法：
+​	此类本身带有一个缓冲区，在读取数据时，先放到缓冲区中，可以减少对数据源的访问，提高运行的效率。**
+
+#### 2.1.2.1 构造方法：
 
 ·BufferedInputStream(InputStream in):创建一个BufferedInputStream并保存其参数，即输入流in，以便将来使用。
 
 ·BufferedInputStream(InputStream in,int size):创建一个具有指定缓冲区大小的BufferedInputStream并保存其参数，即输入流in，以便将来使用。
 
-常用方法：
+#### 2.1.2.2 常用方法：
 
 ·int available():返回下一次对此输入流调用的方法不受阻塞地从此输入流读取（或跳过）的估计剩余字节数。
 
@@ -50,19 +54,21 @@
 
 ·int read(byte[] b,int off,int len):从此字节输入流中给定偏移量处开始将各字节读取到指定的byte数组中。
 
- **DataInputStream:该类提供一些基于多字节读取方法，从而可以读取基本数据类型的数据。**
+### 2.1.3 DataInputStream:
 
-构造方法：
+**该类提供一些基于多字节读取方法，从而可以读取基本数据类型的数据。**
+
+#### 2.1.3.1 构造方法：
 
 ·DataInputStream(InputStream in):使用指定的底层InputStream创建一个DataInputStream。
 
-常用方法：
+#### 2.1.3.2 常用方法：
 
 ·int read(byte[] b):从包含的输入流中读取一定数量的字节，并将它们存储到缓冲区数组b中。
 
 ·int read(byte[] b,int off,int len):从包含的输入流中将最多len个字节读入一个byte数组中。
 
-**字节输出流类：FileOutputStream、BufferedOutputStream和DataOutputStream**
+## 2.2 字节输出流类：FileOutputStream、BufferedOutputStream和DataOutputStream
 
 **FileOutputStream:此类用于从本地文件系统的文件中写入数据。**
 
@@ -112,7 +118,7 @@
 
 ·void write(int b):将指定字节（参数b的八个低位）写入基础输出流。
 
-**2.字符流：**
+# 3 字符流：
 
 **FileReader:用来读取字符文件的便捷类。此类的构造方法假定默认字符编码和默认字节缓冲区大小都是适当的。**
 
@@ -183,29 +189,7 @@ Java输入/输出流体系中常用的流分类（表内容来自java疯狂讲�
 | 推回输入流       | PushbackInputStream      |                        | PushbackReader       |                     |                |
 | 特殊流           | DataInputStream          | DataOutputStream       |                      |                     |                |
 
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
-——————————————————————————————————————————————————————————————————
-
-总结：
+# 4 总结：
 
 1.Java IO是采用的是装饰模式，即采用**处理流**来包装**节点流**的方式，来达到代码通用性。
 
