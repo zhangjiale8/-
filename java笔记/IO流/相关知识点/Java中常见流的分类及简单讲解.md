@@ -70,15 +70,17 @@
 
 ## 2.2 字节输出流类：FileOutputStream、BufferedOutputStream和DataOutputStream
 
-**FileOutputStream:此类用于从本地文件系统的文件中写入数据。**
+### 2.2.1 FileOutputStream:
 
-构造方法：
+​	此类用于从本地文件系统的文件中写入数据。
+
+#### 2.2.1.1 构造方法：
 
 ·FileOutputStream(File file):创建一个向指定File对象表示的文件中写入数据的文件输出流。
 
 ·FileOutputStream(String name):创建一个向具有指定名称的文件中写入数据的输出文件流。
 
-常用方法：
+#### 2.2.1.2 常用方法：
 
 ·void close():关闭此文件输出流并释放与此流有关的所有系统资源。
 
@@ -90,15 +92,17 @@
 
 ·void write(int b):将指定字节写入此文件输出流。
 
-**BufferedOutputStream:此类本身带有一个缓冲区，在写入数据时，先放到缓冲区中，实现缓冲的数据流。**
+### 2.2.2 BufferedOutputStream:
 
-构造方法：
+此类本身带有一个缓冲区，在写入数据时，先放到缓冲区中，实现缓冲的数据流。
+
+#### 2.2.2.1 构造方法：
 
 ·BufferedOutputStream(OutputStream out):创建一个新的缓冲输出流，来将数据写入指定的底层输入流。
 
 ·BufferedOutputStream(OutputStream out,int size):创建一个新的缓冲输出流，来将具有指定缓冲区大小的数据写入指定的底层输出流。
 
-常用方法：
+#### 2.2.2.2 常用方法：
 
 ·void flush():刷新此缓冲的输出流。
 
@@ -106,9 +110,11 @@
 
 ·void write(int b):将指定的字节写入此缓冲的输出流。
 
-**DataOutputStream(OutputStream out):创建一个新的数据输出流，将数据写入指定基础输出流。**
+### 2.2.3 DataOutputStream(OutputStream out):
 
-常用方法：
+创建一个新的数据输出流，将数据写入指定基础输出流。
+
+#### 2.2.3.1 常用方法：
 
 ·void flush():清空此数据输出流。
 
@@ -120,23 +126,27 @@
 
 # 3 字符流：
 
-**FileReader:用来读取字符文件的便捷类。此类的构造方法假定默认字符编码和默认字节缓冲区大小都是适当的。**
+## 3.1 FileReader:
 
-构造方法：
+​	用来读取字符文件的便捷类。此类的构造方法假定默认字符编码和默认字节缓冲区大小都是适当的。**
+
+### 3.1.1 构造方法：
 
 ·FileReader(File file):在给定从中读取数据的File的情况下创建一个新的FileReader。
 
 ·FileReader(String fileName):在给定从中读取数据的文件名的情况下创建一个新的FileReader。
 
-**BufferedReader类是Reader类的子类，为Reader对象添加字符缓冲器，为数据输入分配内存存储空间，存取数据更为有效。**
+## 3.2 BufferedReader
 
-构造方法：
+​	BufferedReader类是Reader类的子类，为Reader对象添加字符缓冲器，为数据输入分配内存存储空间，存取数据更为有效。
+
+### 3.2.1 构造方法：
 
 ·BufferedReader(Reader in):创建一个使用默认大小输入缓冲区的缓冲字符输入流。
 
 ·BufferedReader(Reader in,int sz):创建一个使用指定大小输入缓冲区的缓冲字符输入流。
 
-操作方法：
+### 3.2.2 操作方法：
 
 ·void close():关闭该流并释放与之关联的所有资源。
 
@@ -156,19 +166,19 @@
 
 ·long skip(long n):跳过字符。
 
-**FileWriter:用来写入字符文件的便捷类，可用于写入字符流。**
+## 3.3 FileWriter:
 
-构造方法：
+​	用来写入字符文件的便捷类，可用于写入字符流。
+
+### 3.3.1 构造方法：
 
 ·FileWriter(File file):根据给定的File对象构造一个FileWriter对象。
 
 ·FileWriter(String filename):根据给定的文件名构造一个FileWriter对象。
 
-**BufferedWriter:将文本写入字符输出流，缓冲各个字符，从而提供单个字符、数组和字符串的高效写入。**
+### 3.4 BufferedWriter:
 
- 
-
- 
+​	将文本写入字符输出流，缓冲各个字符，从而提供单个字符、数组和字符串的高效写入。
 
 Java输入/输出流体系中常用的流分类（表内容来自java疯狂讲义）
 
