@@ -22,11 +22,11 @@
 - **内部的每台计算机都可以相互通信(rest/rpc)**
 - **客户端到服务端的一次请求到响应结束会经历多台计算机**
 
-![img](\web相关\zookeeper\image\分布式文件系统01.png)
+![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\分布式文件系统01.png)
 
 
 
-![img](\web相关\zookeeper\image\分布式系统01.png)
+![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\分布式系统01.png)
 
 ## 1.4 分布式系统的问题
 
@@ -34,27 +34,27 @@
 
 ### 1.4.1 问题 : **客户端和服务提供者的紧耦合**
 
-![img](\web相关\zookeeper\image\客户端和服务提供者的紧耦合01.png)
+![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\客户端和服务提供者的紧耦合01.png)
 
 ### 1.4.2 解决方案:
 
 ​	**解除耦合，增加一个中间层 -- 注册中心它保存了能提供的服务的名称，以及URL**。**首先这些服务会在注册中心进行注册，当客户端来查询的时候，只需要给出名称，注册中心就会给出一个URL。所有的客户端在访问服务前，都需要向这个注册中心进行询问，以获得最新的地址**。
 
-![img](\web相关\zookeeper\image\客户端和服务提供者的解除耦合01.png)
+![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\客户端和服务提供者的解除耦合01.png)
 
 - 注**册中心可以是树形结构，每个服务下面有若干节点，每个节点表示服务的实例**。
 
-  ![img](\web相关\zookeeper\image\注册中心树形结构01.png)
+  ![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\注册中心树形结构01.png)
 
 - **注册中心和各个服务实例直接建立Session，要求实例们定期发送心跳，一旦特定时间收不到心跳，则认为实例挂了，删除该实例。**
 
-  ![img](\web相关\zookeeper\image\定期发送心跳01.png)
+  ![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\定期发送心跳01.png)
 
 ### 1.4.2 Job协调问题
 
 - **三个Job的功能相同，部署在三个不同的机器上，要求同一时刻只有一个可以运行，也就是如果有一个宕了的话，需要在剩下的两个中选举出`Master`继续工作**
 
-  ![img](\web相关\zookeeper\image\Job协调问题01.png)
+  ![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\Job协调问题01.png)
 
 - 所以这三个Job需要互相协调
 
@@ -62,29 +62,29 @@
 
   - **让Job在启动之后，去注册中心注册，也就是创建一个树节点，谁成功谁是Master**（**注册中心必须保证只能创建成功一次**）。
 
-    ![img](\web相关\zookeeper\image\注册中心创建01.png)
+    ![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\注册中心创建01.png)
 
   - 这样，如果节点删除了，就开始新一轮争抢。
 
-    ![img](\web相关\zookeeper\image\注册中心创建02.png)
+    ![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\注册中心创建02.png)
 
 ### 1.4.3 **分布式锁, 多台机器上运行的不同的系统操作同一资源**
 
-![img](\web相关\zookeeper\image\分布式锁01.png)
+![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\分布式锁01.png)
 
 - **使用Master选举的方式，让大家去抢，谁能抢到就创建一个`/distribute_lock`节点，读完以后就删除，让大家再来抢。缺点是某个系统可能多次抢到，不够公平**。
 
 - **让每个系统在注册中心的`/distribute_lock`下创建子节点，然后编号,每个系统检查自己的编号，谁的编号小认为谁持有了锁，比如下图中是系统1持有了锁**
 
-  ![img](\web相关\zookeeper\image\分布式锁02.png)
+  ![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\分布式锁02.png)
 
 - 系统1操作完成以后，就可以把process_01删除了，再创建一个新的节点 process_04。此时是process_02最小了，所以认为系统2持有了锁。
 
-  ![img](\web相关\zookeeper\image\分布式锁03.png)
+  ![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\分布式锁03.png)
 
 - 操作完成以后也要把process_02节点删除，创建新的节点。这时候process_03就是最小的了，可以持有锁了。
 
-  ![img](\web相关\zookeeper\image\分布式锁04.png)
+  ![img](E:\学习笔记\mylearnnote\web架构集\zookeeper\image\分布式锁04.png)
 
 ### 1.4.4注册中心的高可用
 
