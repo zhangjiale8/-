@@ -6,7 +6,7 @@
 
 可能刚看到这两句话时，不知道是什么意思。那么，对比一下 js 中的 setInterval 函数的用法，你就能找到一些感觉了。
 
-```
+```java
 //每一秒执行一次匿名函数。（模拟时钟）
 setInterval(function() {
     console.log("当前时间为：" + new Date());
@@ -21,7 +21,7 @@ setInterval(function() {
 
 lambda 表达式语法如下：
 
-```
+```java
 （参数1，参数2） ->  { 方法体 }
 ```
 
@@ -29,7 +29,7 @@ lambda 表达式语法如下：
 
 想一下，在之前我们通过匿名内部类的方式来启动一个线程，是怎么做的？
 
-```
+```java
 public class LambdaTest {
     @Test
     public void test(){
@@ -45,7 +45,7 @@ public class LambdaTest {
 
 现在，若把它改为用 lambda 表达式，则为,
 
-```
+```java
 public class LambdaTest {
     @Test
     public void test(){
@@ -66,11 +66,11 @@ public class LambdaTest {
 - 如果参数只有一个，则可以省略小括号，只写参数的名称即可。
 - 如果方法体中只有一条执行语句，则可以省略右边的大括号。若有返回值，则可以把 return 和大括号同时省略。
 
-## 二、接口默认方法和静态方法
+# 二、接口默认方法和静态方法
 
-### 接口默认方法
+## 2.1 接口默认方法
 
-我们知道，在 Java 的接口中，只能定义方法名，不能实现方法体的，具体的实现需要子类去做。
+​	我们知道，在 Java 的接口中，只能定义方法名，不能实现方法体的，具体的实现需要子类去做。
 
 但是，到了 JDK8 就不一样了。在接口中，也可以通过 `default`关键字来实现方法体。
 
@@ -82,7 +82,7 @@ public class LambdaTest {
 
 假设各种动物的继承体系如下，
 
-```
+```java
 public interface Animal {
     //所有动物都需要吃东西，具体吃什么，让子类去实现
     void eat();
@@ -111,7 +111,7 @@ public class Cat implements Animal {
 
 因此，修改 Animal 接口如下，把 run 和 fly 定义为默认方法，
 
-```
+```java
 public interface Animal {
     //所有动物都需要吃东西，具体吃什么，让子类去实现
     void eat();
@@ -138,15 +138,15 @@ public class Main {
 
 在 JDK8 的集合中，就对 Collection 接口进行了拓展，如增加默认方法 stream() 等。既增强了集合的一些功能，而且也能向下兼容，不会对集合现有的继承体系产生影响。
 
-![img](https://mmbiz.qpic.cn/mmbiz_png/gsoYRA2HIgsehyPNQaUnM6sKokhIhI04ZiaC3uBuz3EjGpP7ox0R3WvUfRYOVVsiaEm3TsQweWRpicibRPSiaA1yGiaQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![img](E:\学习笔记\mylearnnote\javaSE\JDK8\images\202009181945001.png)
 
-### 接口静态方法
+## 2.2 接口静态方法
 
-另外，在接口中也可以定义静态方法。这样，就可以直接通过接口名调用静态方法。（这也很正常，接口本来就不能实例化）
+​	另外，在接口中也可以定义静态方法。这样，就可以直接通过接口名调用静态方法。（这也很正常，接口本来就不能实例化）
 
 需要注意的是，不能通过实现类的对象去调用接口的静态方法。
 
-```
+```java
 public interface MyStaticInterface {
     static void method(){
         System.out.println("这是接口的静态方法");
@@ -162,7 +162,7 @@ public class MyStaticInterfaceImpl implements MyStaticInterface {
 }
 ```
 
-## 三、函数式接口
+# 三、函数式接口
 
 如果一个接口中只有一个抽象方法，则称其为函数式接口。可以使用 `@FunctionalInterface` 注解来检测一个接口是否为函数式接口。
 
