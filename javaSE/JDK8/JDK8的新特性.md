@@ -175,7 +175,7 @@ JDK提供了常见的最简单的四种函数式接口：（必须掌握哦）
 
 我这里举例了它们的使用方法，
 
-```
+```java
 public class LambdaTest {
     @Test
     public void test2(){
@@ -242,23 +242,23 @@ public class LambdaTest {
 
 除此之外，JDK 中还有很多函数式接口，例如 `Comparator.java`。只要类上边看到了 `@FunctionalInterface` 这个注解，你都可以使用 lambda 表达式来简化写法。
 
-## 四、方法引用
+# 四、方法引用
 
-概念：方法引用是用来直接访问类或者实例的**已经存在的**方法或者构造方法。
+​	概念：方法引用是用来直接访问类或者实例的**已经存在的**方法或者构造方法。
 
-这里强调一下**已经存在**的含义。因为，lambda表达式本质上就是一个匿名函数。我们知道，函数就是做逻辑处理的：拿一些数据，去做一些操作。
+​	这里强调一下**已经存在**的含义。因为，lambda表达式本质上就是一个匿名函数。我们知道，函数就是做逻辑处理的：拿一些数据，去做一些操作。
 
 如果，我们发现有其他地方（类或者对象）已经存在了相同的逻辑处理方案，那么就可以引用它的方案，而不必重复写逻辑。这就是方法引用。
 
-其实方法引用就是一个lambda表达式的另外一种更简洁的表达方式。也可以说是语法糖。
+​	其实方法引用就是一个lambda表达式的另外一种更简洁的表达方式。也可以说是语法糖。
 
-只不过，这里要求 lambda 表达式需要符合一定的要求。首先，方法体只有一行代码。其次，方法的实现已经存在。此时，就可以用方法引用替换 lambda 表达式。
+​	只不过，这里要求 lambda 表达式需要符合一定的要求。首先，方法体只有一行代码。其次，方法的实现已经存在。此时，就可以用方法引用替换 lambda 表达式。
 
 方法引用的操作符为双冒号`::`。
 
 下边就以最简单的一个我们非常常见的打印语句为例。
 
-```
+```java
 //遍历数组里边的元素，并打印，用lambda表达式
 String[] arr = new String[]{"zhangsan","lisi"};
 Arrays.asList(arr).forEach((s)-> System.out.println(s));
@@ -268,7 +268,7 @@ Arrays.asList(arr).forEach((s)-> System.out.println(s));
 
 所以，此处 lambda 表达式可以用方法引用替换。
 
-```
+```java
 // 注意：方法引用中的方法名不可带括号。
 Arrays.asList(arr).forEach(System.out::println);
 ```
@@ -282,7 +282,7 @@ Arrays.asList(arr).forEach(System.out::println);
 
 下边举例说明：
 
-```
+```java
 public class ReferTest {
     public static void main(String[] args) {
         //函数式接口的抽象方法的参数列表和返回值类型，必须与方法引用对应的方法参数列表和返回值类型保持一致(情况3除外，比较特殊)。
@@ -324,7 +324,7 @@ public class ReferTest {
 
 题外话：方法引用，有时候不太好理解，让人感觉莫名其妙。所以，如果不熟悉的话，用 lambda 表达式完全没有问题。就是习惯的问题，多写就有感觉了。
 
-## 五、Optional
+# 五、Optional
 
 Optional 类是一个容器类。在之前我们通常用 null 来表达一个值不存在，现在可以用 Optional 更好的表达值存在或者不存在。
 
@@ -332,7 +332,7 @@ Optional 类是一个容器类。在之前我们通常用 null 来表达一个�
 
 我们知道，像层级关系比较深的对象，中间的调用过程很容易出现空指针，如下代码。
 
-```
+```java
 User user = new User()；
 //中间过程，user对象或者address对象都有可能为空，从而产生空指针异常
 String details = user.getAddress().getDetails();
@@ -340,7 +340,7 @@ String details = user.getAddress().getDetails();
 
 其中，对象的关系如下，
 
-```
+```java
 // 地址信息类
 public class Address {
     private String province; //省
@@ -406,7 +406,7 @@ public class User {
 
 在 Optional 类出现之前，为了防止空指针异常，可以这样做。(每一层都添加判空处理)
 
-```
+```java
 private static String getUserAddr(User user){
     if(user != null){
         Address address = user.getAddress();
@@ -433,7 +433,7 @@ private static String getUserAddr(User user){
 
 它把真正需要操作的对象 T 封装成 value 属性。构造器私有化，并提供三种静态的创建 Optional 对象的方法。
 
-```
+```java
 public final class Optional<T> {
     //EMPTY 代表一个值为空的 Optional 对象
     private static final Optional<?> EMPTY = new Optional<>();
@@ -483,9 +483,9 @@ public final class Optional<T> {
 
 ### 常用方法
 
-**1、get方法**
+## 5.1 get方法
 
-```
+```java
 public T get() {
     //如果值为null，则抛出异常，否则返回非空值value
     if (value == null) {
@@ -495,9 +495,9 @@ public T get() {
 }
 ```
 
-**2、isPresent方法**
+## 5.2 isPresent方法
 
-```
+```java
 //判断值是否存在，若值不为空，则认为存在
 public boolean isPresent() {
     return value != null;
@@ -506,7 +506,7 @@ public boolean isPresent() {
 
 看到这，不知道有没有小伙伴和我当初有一样的疑惑。既然有判空方法 isPresent，还有获取对象的 get 方法。那开头的那个坑，是不是就可以改写为如下，
 
-```
+```java
 //注意此时user类型为Optional<User>
 private static String getUserAddr(Optional<User> user){
     //如果user存在，则取address对象
@@ -534,9 +534,9 @@ private static String getUserAddr(Optional<User> user){
 
 不要奇怪，isPresent 方法，其实是为了 Optional 中的其他方法服务的（如map方法），本意并不是为了让我们手动调用。你会在后续多个方法中，见到 isPresent 的身影。
 
-**3、ifPresent**
+## 5.3 ifPresent
 
-```
+```java
 //传入一个消费型接口，当值存在时，才消费。
 public void ifPresent(Consumer<? super T> consumer) {
     if (value != null)
@@ -548,7 +548,7 @@ public void ifPresent(Consumer<? super T> consumer) {
 
 如可以这样判空，
 
-```
+```java
 Optional<User> user = Optional.ofNullable(new User());
 user.ifPresent(System.out::println);
 //不要用下边这种
@@ -557,9 +557,9 @@ if (user.isPresent()) {
 }
 ```
 
-**4、orElse 和 orElseGet**
+## 5.4 orElse 和 orElseGet
 
-```
+```java
 public T orElse(T other) {
     return value != null ? value : other;
 }
@@ -571,7 +571,7 @@ public T orElseGet(Supplier<? extends T> other) {
 
 这两个方法都是当值不存在时，用于返回一个默认值。如user对象为null时，返回默认值。
 
-```
+```java
 @Test
 public void test1(){
     User user = null;
@@ -616,11 +616,11 @@ orElseGet调用
 
 所以，当 orElse() 方法传入的参数需要创建对象或者比较耗时的操作时，建议用 orElseGet()
 
-**5、orElseThrow**
+## 5.5 orElseThrow
 
 当值为null，可以返回自定义异常。
 
-```
+```java
 User user = null;
 Optional.ofNullable(user).orElseThrow(IllegalAccessError::new);
 ```
@@ -629,9 +629,9 @@ Optional.ofNullable(user).orElseThrow(IllegalAccessError::new);
 
 这样，可以有针对的对特定异常做一些其他处理。因为，会抛出哪些异常的情况，是我们可控的。
 
-**6、map**
+## 5.6 map
 
-```
+```java
 public<U> Optional<U> map(Function<? super T, ? extends U> mapper) {
     Objects.requireNonNull(mapper);
     //看到没，map内部会先调用isPresent方法来做判空处理。
@@ -646,7 +646,7 @@ public<U> Optional<U> map(Function<? super T, ? extends U> mapper) {
 
 map类似 Stream 的 map方法。处理完之后，返回的还是一个 Optional 对象，所以可以做链式调用。
 
-```
+```java
 User user = new User();
 String name = Optional.of(user).map(User::getName)
         .orElse("佚名");
@@ -661,7 +661,7 @@ System.out.println(name);
 
 没错，我们可以通过 Optional 的链式调用，通过 map，orElse 等操作改写。如下，
 
-```
+```java
 private static String getUserAddr1(Optional<User> user){
     //先获取address对象
     return user.map((u)->u.getAddress())
@@ -676,9 +676,9 @@ private static String getUserAddr1(Optional<User> user){
 
 就像上边的操作，第一个map方法包装了User类型的user对象值，第二个map包装了String类型的details值，orElse 返回最终需要的字符串。
 
-**7、flatMap**
+## 7 flatMap
 
-```
+```java
 public<U> Optional<U> flatMap(Function<? super T, Optional<U>> mapper) {
     Objects.requireNonNull(mapper);
     if (!isPresent())
@@ -701,7 +701,7 @@ map第二个泛型为`? extends U`，flatMap第二个泛型为`Optional<U>`。
 
 下边就看下怎么操作 flatMap。
 
-```
+```java
 @Test
 public void test3(){
     User user = new User();
@@ -716,9 +716,9 @@ private Optional<String> getUserName(User user){
 }
 ```
 
-**8、filter**
+## 5.8 filter
 
-```
+```java
 public Optional<T> filter(Predicate<? super T> predicate) {
     Objects.requireNonNull(predicate);
     if (!isPresent())
@@ -732,7 +732,7 @@ public Optional<T> filter(Predicate<? super T> predicate) {
 
 如下，过滤姓名为空的 user。
 
-```
+```java
 User user = new User();
 //由于user没有设置 name，所以返回一个值为 null 的 optionalUser
 Optional<User> optionalUser = Optional.of(user).filter((u) -> this.getUserName(u).isPresent());
@@ -740,7 +740,7 @@ Optional<User> optionalUser = Optional.of(user).filter((u) -> this.getUserName(u
 optionalUser.get();
 ```
 
-## 六、Stream API
+# 六、Stream API
 
 首先，什么是 Stream 流？
 
@@ -748,7 +748,7 @@ optionalUser.get();
 
 之所以叫流，是因为它就像一个流水线一样。从原料经过 n 道加工程序之后，变成可用的成品。
 
-![img](https://mmbiz.qpic.cn/mmbiz_png/gsoYRA2HIgsehyPNQaUnM6sKokhIhI04aiczsDVZNdgWJcUyYk6klDIIY8JaRcIKiaw3GmRtJ23MiaxSrZ6icF3kow/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![img](E:\学习笔记\mylearnnote\javaSE\JDK8\images\202009221020.png)
 
 如果，你有了解过 Spark 里边的 Streaming，就会有一种特别熟悉的感觉。因为它们的思想和用法如此相似。
 
@@ -768,13 +768,13 @@ optionalUser.get();
 
 于是，stream操作数据的三大步骤为：**数据源，中间操作，终止操作。**
 
-### 数据源
+## 6.1 数据源
 
 流的源可以是一个数组，一个集合，一个生成器方法等等。
 
-**1、使用 Collection 接口中的 default 方法。**
+### 6.1.1 使用 Collection 接口中的 default 方法。
 
-```
+```java
 default Stream<E> stream()  //返回一个顺序流
 default Stream<E> parallelStream() //返回一个并行流
 ```
@@ -783,7 +783,7 @@ default Stream<E> parallelStream() //返回一个并行流
 
 由于 Collection 集合父接口定义了这些默认方法，所以像 List，Set 这些子接口下的实现类都可以用这种方式生成一个 Stream 流。
 
-```
+```java
 public class StreamTest {
     public static void main(String[] args) {
         List<String> list = new ArrayList<>();
@@ -800,20 +800,20 @@ public class StreamTest {
 }
 ```
 
-**2、 Arrays 的静态方法 stream()**
+### 6..1.2  Arrays 的静态方法 stream()
 
-```
+```java
  static <T> Stream<T> stream(T[] array)
 ```
 
 可以传入各种类型的数组，把它转化为流。如下，传入一个字符串数组。
 
-```
+```java
 String[] arr = {"abc","aa","ef"};
 Stream<String> stream1 = Arrays.stream(arr);
 ```
 
-**3、Stream接口的 of() ，generate()，iterate()方法**
+### 6.1.3 Stream接口的 of() ，generate()，iterate()方法
 
 注意，of() 方法返回的是有限流，即元素个数是有限的，就是你传入的元素个数。
 
@@ -821,7 +821,7 @@ Stream<String> stream1 = Arrays.stream(arr);
 
 使用方法如下，
 
-```
+```java
 //of
 Stream<Integer> stream2 = Stream.of(10, 20, 30, 40, 50);
 stream.forEach(System.out::println);
@@ -831,7 +831,7 @@ Stream<Integer> generate = Stream.generate(() -> new Random().nextInt(100));
 Stream<Integer> iterate = Stream.iterate(0, x -> x + 2);
 ```
 
-**4、IntStream，LongStream，DoubleStream 的 of、range、rangeClosed 方法**
+### 6.1.4 IntStream，LongStream，DoubleStream 的 of、range、rangeClosed 方法
 
 它们的用法都是一样，不过是直接包装了一层。
 
@@ -839,7 +839,7 @@ Stream<Integer> iterate = Stream.iterate(0, x -> x + 2);
 
 以 IntStream 类为例，其他类似，
 
-```
+```java
 IntStream intStream = IntStream.of(10, 20, 30);
 //从0每次递增1，到10，包括0，但不包括10
 IntStream rangeStream = IntStream.range(0, 10);
@@ -847,11 +847,11 @@ IntStream rangeStream = IntStream.range(0, 10);
 IntStream rangeClosed = IntStream.rangeClosed(0, 10);
 ```
 
-### 中间操作
+## 6.2 中间操作
 
 一个流可以有零个或者多个中间操作，每一个中间操作都会返回一个新的流，供下一个操作使用。
 
-**1、筛选与切片**
+### 6.2.1 筛选与切片
 
 常见的包括：
 
@@ -862,7 +862,7 @@ IntStream rangeClosed = IntStream.rangeClosed(0, 10);
 
 用法如下：
 
-```
+```java
 @Test
 public void test1(){
     ArrayList<Employee> list = new ArrayList<>();
@@ -913,7 +913,7 @@ Employee{name='王五', salary=4000}
 Employee{name='赵六', salary=4500}
 ```
 
-**2、映射**
+### 6.2.2 映射
 
 主要是map，包括：
 
@@ -925,7 +925,7 @@ Employee{name='赵六', salary=4500}
 
 用法如下：
 
-```
+```java
 @Test
 public void test2(){
     int[] arr = {10,20,30,40,50};
@@ -972,7 +972,7 @@ public void test2(){
 
 现在给出这样的数据，若想返回所有水果单词的所有字母（"appleorangebanana"），应该怎么做？
 
-```
+```java
 String[] fruits = {"apple","orange","banana"};
 ```
 
@@ -982,7 +982,7 @@ String[] fruits = {"apple","orange","banana"};
 
 所以需要进一步遍历，再遍历（遍历两次），如下
 
-```
+```java
 String[] fruits = {"apple","orange","banana"};
 Stream.of(fruits).map((s) -> Stream.of(s.split("")))
         .forEach(e -> e.forEach(System.out::print));
@@ -992,7 +992,7 @@ Stream.of(fruits).map((s) -> Stream.of(s.split("")))
 
 用 flatMap 可以简化这个过程，如下。其实，就是把中间的二维数组直接压平成一维的单个元素，减少遍历次数。
 
-```
+```java
 Stream.of(fruits).map(s -> s.split(""))
                  .flatMap(e -> Stream.of(e))
                  .forEach(System.out::print);
@@ -1000,20 +1000,20 @@ Stream.of(fruits).map(s -> s.split(""))
 
 还有一种写法，不用 map，直接 flatMap。
 
-```
+```java
 Stream.of(fruits).flatMap(s -> Stream.of(s.split("")))
          .collect(Collectors.toList())
          .forEach(System.out::print);
 ```
 
-**3、排序**
+### 6.2.3 排序
 
 - sorted()
 - sorted(Comparator<? super T> comparator)
 
 排序有两个方法，一个是无参的，默认按照自然顺序。一个是带参的，可以指定比较器。
 
-```
+```java
 @Test
 public void test4(){
     String[] arr = {"abc","aa","ef"};
@@ -1025,11 +1025,11 @@ public void test4(){
 } 
 ```
 
-### 终止操作
+## 6.3 终止操作
 
-一个流只会有一个终止操作。Stream只有遇到终止操作，它的源才开始执行遍历操作。注意，在这之后，这个流就不能再使用了。
+**一个流只会有一个终止操作。Stream只有遇到终止操作，它的源才开始执行遍历操作。注意，在这之后，这个流就不能再使用了**。
 
-**1、查找与匹配**
+### 6.3.1 查找与匹配
 
 - allMatch(Predicate p)，传入一个断言型函数，检查是否匹配所有元素
 - anyMatch( (Predicate p) )，检查是否匹配任意一个元素
@@ -1043,15 +1043,15 @@ public void test4(){
 
 由于上边 API 过于简单，不再做例子。
 
-**2、规约**
+### 6.3.2 规约
 
 规约就是 reduce ，把数据集合到一起。相信你肯定听说过 hadoop 的 map-reduce ，思想是一样的。
 
 这个方法着重说一下，比较常用，有三个重载方法。
 
-2.1、一个参数
+#### 6.3.2.1 一个参数
 
-```
+```java
 Optional<T> reduce(BinaryOperator<T> accumulator);
 ```
 
@@ -1059,7 +1059,7 @@ Optional<T> reduce(BinaryOperator<T> accumulator);
 
 我们需要看下 BinaryOperator 这个函数式接口的结构，不然后边就不懂了，也不知道怎么用。
 
-```
+```java
 //BinaryOperator继承自 BiFunction<T,T,T>，我们发现它们的泛型类型都是T，完全相同
 public interface BinaryOperator<T> extends BiFunction<T,T,T> {
 }
@@ -1073,7 +1073,7 @@ public interface BiFunction<T, U, R> {
 
 使用方式如下，
 
-```
+```java
 Integer[] arr = {1,2,3,4,5,6};
 Integer res1 = Stream.of(arr).reduce((x, y) -> x + y).get();
 System.out.println(res1);
@@ -1082,9 +1082,9 @@ System.out.println(res1);
 
 它表达的意思是，反复合并计算。如上，就是先计算1和2的和，然后计算结果3再和下一个元素3求和，依次反复计算，直到最后一个元素。
 
-2.2、两个参数
+#### 6.3.2.2 两个参数
 
-```
+```java
 T reduce(T identity, BinaryOperator<T> accumulator);
 ```
 
@@ -1092,7 +1092,7 @@ T reduce(T identity, BinaryOperator<T> accumulator);
 
 如下，给一个 10 的初始值，依次累加，
 
-```
+```java
 Integer res2 = Stream.of(arr).reduce(10, (x, y) -> x + y);
 System.out.println(res2);
 // 结果：31
@@ -1102,13 +1102,13 @@ System.out.println(res2);
 
 它的计算过程示意图可以用下图表示，
 
-![img](data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==)
+![](E:\学习笔记\mylearnnote\javaSE\JDK8\images\微信图片_20200922105921.jpg)
 
 identity 先和 T1 做计算，返回值作为中间结果，参与下一次和 T2 计算，如此反复。
 
 另外需要注意的时，源码中说明了一句，并不强制要求一定按顺序计算。
 
-> ```
+> ```java
 > but is not constrained to execute sequentially.
 > ```
 
@@ -1116,9 +1116,9 @@ identity 先和 T1 做计算，返回值作为中间结果，参与下一次和 
 
 这也是为什么它要求函数符合结合律，因为交换元素顺序不能影响到最终的计算结果。
 
-2.3、三个参数
+#### 6.3.2.3 三个参数
 
-```
+```java
 <U> U reduce(U identity,
              BiFunction<U, ? super T, U> accumulator,
              BinaryOperator<U> combiner);
@@ -1132,13 +1132,13 @@ identity 先和 T1 做计算，返回值作为中间结果，参与下一次和 
 
 因此，我们可以把 reduce 分为非并行和并行两种情况。
 
-2.3.1、 非并行规约
+##### 6.3.2.3.1 非并行规约
 
 非并行情况下，第三个参数不起作用，identity 代表的是初始值。
 
 以下的计算，是初始化一个 list，并向其中添加流中的元素。
 
-```
+```java
 Integer[] arr = {1,2,3,4,5,6};
 ArrayList<Integer> res = Stream.of(arr).reduce(Lists.newArrayList(0),
                                                (l, e) -> {
@@ -1155,7 +1155,7 @@ System.out.println(res);
 // [0, 1, 2, 3, 4, 5, 6]
 ```
 
-2.3.2、并行规约
+##### 6.3.2.3.2 并行规约
 
 并行规约，用的是 fork-join 框架思想，分而治之。把一个大任务分成若干个子任务，然后再合并。
 
@@ -1165,7 +1165,7 @@ System.out.println(res);
 
 下边用例子说明：
 
-```
+```java
 Integer res4 = Stream.of(1,2,3,4).parallel().reduce(1,
                 (s,e) -> s + e,
                 (sum, s) -> sum + s);
@@ -1178,7 +1178,7 @@ System.out.println(res4); // 结果：14
 
 具体执行几次 combiner  ，可以通过以下方式计算出来 。（ c 并不能代表有几个执行子任务）
 
-```
+```java
 AtomicInteger c = new AtomicInteger(0);
 Integer res4 = Stream.of(1,2,3,4).parallel().reduce(1,
         (s,e) -> s + e,
@@ -1189,14 +1189,14 @@ System.out.println(res4); //14
 
 c 为 3 代表执行了 3 次 combiner  ，最后计算总结果时，还会再加一次初始值，所以结果为：
 
-```
+```java
 (1+2+3+4) + (3+1) * 1 = 14
 // 1+2+3+4 为正常非并行结算的和，3+1 为总共计算了几次初始值。
 ```
 
 我们可以通过加大stream的数据量来验证猜想。从1 加到 100 。初始值为 2 。
 
-```
+```java
 AtomicInteger count = new AtomicInteger(0);
 int length = 100;
 Integer[] arr1 = new Integer[length];
@@ -1212,7 +1212,7 @@ System.out.println(res5); //5082
 
 即：
 
-```
+```java
 (1+...+100) + (15+1) * 2 = 5082
 ```
 
@@ -1228,7 +1228,7 @@ System.out.println(res5); //5082
 > This means that for all u, combiner(identity, u) is equal to u.
 > ```
 
-![img](https://mmbiz.qpic.cn/mmbiz_png/gsoYRA2HIgsehyPNQaUnM6sKokhIhI044HlN8Qc79eZTn2R9Zbib9wQdzbq57zRFQDlU0I0crqDhtJ0undYF2rg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![img](E:\学习笔记\mylearnnote\javaSE\JDK8\images\202009221329.png)
 
 意思是，需要每次 combiner 运算时，identity 的值保证 u == combiner(identity,u) 是一个恒等式。
 
@@ -1236,7 +1236,7 @@ System.out.println(res5); //5082
 
 故，改写程序如下，
 
-```
+```java
 //其他都不变，只有 identity 由 2 改为 0
 AtomicInteger count = new AtomicInteger(0);
 int length = 100;
@@ -1255,7 +1255,7 @@ System.out.println(res5); //5050
 
 比如，对于 set 集合会自动去重，这种情况下，也可以使用并行计算，
 
-```
+```java
 //初始化一个set，然后把stream流的元素添加到set中，
 //需要注意：用并行的方式，这个set集合必须是线程安全的。否则会报错ConcurrentModificationException
 Set<Integer> res3 = Stream.of(1, 2, 3, 4).parallel().reduce(Collections.synchronizedSet(Sets.newHashSet(10),
@@ -1270,13 +1270,13 @@ Set<Integer> res3 = Stream.of(1, 2, 3, 4).parallel().reduce(Collections.synchron
 System.out.println(res3);
 ```
 
-**3、收集**
+##### 6.3.2.3.3 收集
 
 收集操作，可以把流收集到 List，Set，Map等中。而且，Collectors 类中提供了很多静态方法，方便的创建收集器供我们使用。
 
 这里举几个常用的即可。具体的 API 可以去看 Collectors  源码（基本涵盖了各种，最大值，最小值，计数，分组等功能。）。
 
-```
+```java
  @Test
 public void test6() {
     ArrayList<Employee> list = new ArrayList<>();
@@ -1299,13 +1299,13 @@ public void test6() {
 }
 ```
 
-## 七、日期时间新 API
+# 七、日期时间新 API
 
 JDK8 之前的时间 API 存在线程安全问题，并且设计混乱。因此，在 JDK8 就重新设计了一套 API。
 
 如下，线程不安全的例子。
 
-```
+```java
 @Test
 public void test1() throws Exception{
     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -1326,17 +1326,17 @@ public void test1() throws Exception{
 
 接下来，我们就学习下新的时间 API ，然后改写上边的程序。
 
-### LocalDate，LocalTime，LocalDateTime
+## 7.1 LocalDate，LocalTime，LocalDateTime
 
 它们都是不可变类，用法差不多。以 LocalDate 为例。
 
-**1、创建时间对象**
+### 7.1.1 创建时间对象
 
 - now ，静态方法，根据当前时间创建对象
 - of，静态方法，根据指定日期、时间创建对象
 - parse，静态方法，通过字符串指定日期
 
-```
+```java
 LocalDate localDate1 = LocalDate.now();
 System.out.println(localDate1);  //2020-09-05
 LocalDate localDate2 = LocalDate.of(2020, 9, 5);
@@ -1345,7 +1345,7 @@ LocalDate localDate3 = LocalDate.parse("2020-09-05");
 System.out.println(localDate3); //2020-09-05
 ```
 
-**2、获取年月日周**
+### 7.1.2 获取年月日周
 
 - getYear，获取年
 - getMonth ，获取月份，返回的是月份的枚举值
@@ -1354,7 +1354,7 @@ System.out.println(localDate3); //2020-09-05
 - getDayOfMonth，获取一个月中的第几天（1-31）
 - getDayOfWeek，获取一周的第几天，返回的是枚举值
 
-```
+```java
 LocalDate currentDate = LocalDate.now();
 System.out.println(currentDate.getYear()); //2020
 System.out.println(currentDate.getMonth()); // SEPTEMBER
@@ -1364,7 +1364,7 @@ System.out.println(currentDate.getDayOfMonth()); //5
 System.out.println(currentDate.getDayOfWeek()); // SATURDAY
 ```
 
-**3、日期比较，前后或者相等**
+### 7.1.3 日期比较，前后或者相等
 
 - isBefore ，第一个日期是否在第二个日期之前
 - isAfter，是否在之后
@@ -1373,7 +1373,7 @@ System.out.println(currentDate.getDayOfWeek()); // SATURDAY
 
 它们都返回的是布尔值。
 
-```
+```java
 LocalDate date1 = LocalDate.of(2020, 9, 5);
 LocalDate date2 = LocalDate.of(2020, 9, 6);
 System.out.println(date1.isBefore(date2)); //true
@@ -1382,7 +1382,7 @@ System.out.println(date1.equals(date2)); //false
 System.out.println(date1.isLeapYear()); //true
 ```
 
-**4、日期加减**
+### 7.1.4 日期加减
 
 - plusDays,  加几天
 - plusWeeks, 加几周
@@ -1391,7 +1391,7 @@ System.out.println(date1.isLeapYear()); //true
 
 减法同理，
 
-```
+```java
 LocalDate nowDate = LocalDate.now();
 System.out.println(nowDate);  //2020-09-05
 System.out.println(nowDate.plusDays(1)); //2020-09-06
@@ -1400,21 +1400,21 @@ System.out.println(nowDate.plusMonths(1)); //2020-10-05
 System.out.println(nowDate.plusYears(1)); //2021-09-05
 ```
 
-### 时间戳 Instant
+## 7.2 时间戳 Instant
 
 Instant 代表的是到从 UTC 时区 1970年1月1日0时0分0秒开始计算的时间戳。
 
-```
+```java
 Instant now = Instant.now();
 System.out.println(now.toString()); // 2020-09-05T14:11:07.074Z
 System.out.println(now.toEpochMilli()); // 毫秒数， 1599315067074 
 ```
 
-### 时间段 Duration
+## 7.3 时间段 Duration
 
 用于表示时间段 ，可以表示 LocalDateTime 和 Instant 之间的时间段，用 between 创建。
 
-```
+```java
 LocalDateTime today = LocalDateTime.now(); //今天的日期时间
 LocalDateTime tomorrow = today.plusDays(1); //明天
 Duration duration = Duration.between(today, tomorrow); //第二个参数减去第一个参数的时间差
@@ -1426,7 +1426,7 @@ System.out.println(duration.toMillis()); //毫秒，86400000
 System.out.println(duration.toNanos()); // 纳秒，86400000000000
 ```
 
-### 日期段 Period
+## 7.4 日期段 Period
 
 和时间段 Duration，但是 Period 只能精确到年月日。
 
@@ -1445,7 +1445,7 @@ System.out.println(of); // P2020Y9M6D
 System.out.printf("距离国庆节还有 %d 年 %d 月 %d 天" , period.getYears(),period.getMonths(),period.getDays());
 ```
 
-### 时区 ZoneId
+## 7.5 时区 ZoneId
 
 ZoneId 表示不同的时区。
 
@@ -1453,7 +1453,7 @@ ZoneId 表示不同的时区。
 - of(id)，根据时区id获得对应的 ZoneId 对象
 - systemDefault，获取当前时区
 
-```
+```java
 Set<String> availableZoneIds = ZoneId.getAvailableZoneIds();
 availableZoneIds.forEach(System.out::println); //打印所有时区
 ZoneId of = ZoneId.of("Asia/Shanghai");   //获取亚洲上海的时区对象
@@ -1461,11 +1461,11 @@ System.out.println(of);
 System.out.println(ZoneId.systemDefault()); //当前时区为：Asia/Shanghai
 ```
 
-### 日期时间格式化
+## 7.6 日期时间格式化
 
 JDK1.8 提供了线程安全的日期格式化类 DateTimeFormatter。
 
-```
+```java
 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 // 1. 日期时间转化为字符串。有两种方式
 String format = dtf.format(LocalDateTime.now());
@@ -1486,7 +1486,7 @@ System.out.println(parse1); // 2020-09-05T00:00
 
 接下来，就可以把上边线程不安全的类改写为新的时间 API  。
 
-```
+```java
 @Test
 public void test8() throws Exception{
     // SimpleDateFormat 改为 DateTimeFormatter
