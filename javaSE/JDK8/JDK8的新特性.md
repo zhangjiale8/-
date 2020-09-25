@@ -1482,7 +1482,7 @@ LocalDateTime parse1 = LocalDateTime.parse("2020-09-05 00:00:00", dtf);
 System.out.println(parse1); // 2020-09-05T00:00
 ```
 
-### 改为线程安全类
+## 7.7 改为线程安全类
 
 接下来，就可以把上边线程不安全的类改写为新的时间 API  。
 
