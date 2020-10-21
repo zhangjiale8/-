@@ -654,34 +654,53 @@ public class OrderController {
 }
 ```
 
+## 1.5 监控中心
 
+### 1.5.1 dubbo-admin
 
-## 5、监控中心
+​	图形化的服务管理页面；安装时需要指定注册中心地址，即可从注册中心中获取到所有的提供者/消费者进行配置管理
 
-### 5.1）、dubbo-admin
-
-图形化的服务管理页面；安装时需要指定注册中心地址，即可从注册中心中获取到所有的提供者/消费者进行配置管理
-
- 
-
-### 5.2）、dubbo-monitor-simple
+### 1.5.2 dubbo-monitor-simple
 
 简单的监控中心；
 
-#### **1、安装**
+#### 1.5.2.1 安装
 
-| 1、下载 dubbo-opshttps://github.com/apache/incubator-dubbo-ops |
-| ------------------------------------------------------------ |
-| 2、修改配置指定注册中心地址进入 dubbo-monitor-simple\src\main\resources\conf修改 dubbo.properties文件![img](file:///C:\Users\ADMINI~1\AppData\Local\Temp\ksohtml10132\wps86.jpg) |
-| 3、打包dubbo-monitor-simplemvn clean package -Dmaven.test.skip=true |
-| 4、解压 tar.gz 文件，并运行start.bat![img](file:///C:\Users\ADMINI~1\AppData\Local\Temp\ksohtml10132\wps87.jpg) 如果缺少servlet-api，自行导入servlet-api再访问监控中心 |
-| 5、启动访问8080![img](file:///C:\Users\ADMINI~1\AppData\Local\Temp\ksohtml10132\wps88.jpg) |
+##### 1.5.2.1.1 下载 dubbo-ops
+
+https://github.com/apache/incubator-dubbo-ops 
+
+##### 1.5.2.1.2 修改配置指定注册中心地址
+
+进入 dubbo-monitor-simple\src\main\resources\conf
+
+修改 dubbo.properties文件
+
+![image-20201021110609181](E:\学习笔记\mylearnnote\web架构集\dubbo\images\image-20201021110609181.png)
+
+##### 1.5.2.1.3 打包dubbo-monitor-simple
+
+mvn clean package -Dmaven.test.skip=true
+
+##### 1.5.2.1.4 解压 tar.gz 文件，并运行start.bat
+
+![image-20201021110820858](E:\学习笔记\mylearnnote\web架构集\dubbo\images\image-20201021110820858.png)
+
+如果缺少servlet-api，自行导入servlet-api再访问监控中心
+
+##### 1.5.2.1.5 启动访问8080
+
+![image-20201021110919411](E:\学习笔记\mylearnnote\web架构集\dubbo\images\image-20201021110919411.png)
 
  
 
-#### **2、监控中心配置**
+#### 1.5.2.2 监控中心配置
 
-所有服务配置连接监控中心，进行监控统计  <!-- 监控中心协议，如果为protocol="registry"，表示从注册中心发现监控中心地址，否则直连监控中心 -->	<dubbo:monitor protocol=**"registry"**></dubbo:monitor> 
+```xml
+所有服务配置连接监控中心，进行监控统计
+    <!-- 监控中心协议，如果为protocol="registry"，表示从注册中心发现监控中心地址，否则直连监控中心 -->
+	<dubbo:monitor protocol="registry"></dubbo:monitor>
+```
 
 Simple Monitor 挂掉不会影响到 Consumer 和 Provider 之间的调用，所以用于生产环境不会有风险。
 
@@ -689,7 +708,56 @@ Simple Monitor 采用磁盘存储统计信息，请注意安装机器的磁盘�
 
  
 
-## 6、整合SpringBoot
+## 1.6 整合SpringBoot
+
+### 1.6.1 引入spring-boot-starter以及dubbo和curator的依赖
+
+```xml
+<dependency>
+    <groupId>com.alibaba.boot</groupId>
+    <artifactId>dubbo-spring-boot-starter</artifactId>
+    <version>0.2.0</version>
+</dependency>
+```
+
+注意starter版本适配：
+
+![image-20201021111859828](E:\学习笔记\mylearnnote\web架构集\dubbo\images\image-20201021111859828.png)
+
+### 1.6.2 配置application.properties
+
+#### 1.6.2.1 提供者配置
+
+```xml
+dubbo.application.name=gmall-user
+dubbo.registry.protocol=zookeeper
+dubbo.registry.address=192.168.67.159:2181
+dubbo.scan.base-package=com.atguigu.gmall
+dubbo.protocol.name=dubbo
+
+application.name就是服务名，不能跟别的dubbo提供端重复
+registry.protocol 是指定注册中心协议
+registry.address 是注册中心的地址加端口号
+protocol.name 是分布式固定是dubbo,不要改。
+base-package  注解方式要扫描的包
+```
+
+#### 1.6.2.2 消费者配置：
+
+```
+dubbo.application.name=gmall-order-web
+dubbo.registry.protocol=zookeeper
+dubbo.registry.address=192.168.67.159:2181
+dubbo.scan.base-package=com.atguigu.gmall
+dubbo.protocol.name=dubbo
+```
+
+### 1.6.3 dubbo注解
+
+**@Service、@Reference**
+**【如果没有在配置中写dubbo.scan.base-package,还需要使用@EnableDubbo注解】**
+
+
 
 | 1、引入***\*spring-boot-starter以及du\*******\*bbo和\*******\*c\*******\*urator的依赖\****<dependency>  <groupId>com.alibaba.boot</groupId>  <artifactId>dubbo-spring-boot-starter</artifactId>  <version>0.2.0</version></dependency>注意starter版本适配：![img](file:///C:\Users\ADMINI~1\AppData\Local\Temp\ksohtml10132\wps89.jpg) |
 | ------------------------------------------------------------ |
