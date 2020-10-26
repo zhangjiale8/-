@@ -1,8 +1,97 @@
-Spring 面试题（二） 1、什么是 spring? Spring 是 个 java 企 业 级 应 用 的 开 源 开 发 框 架 。 Spring 主 要 用 来 开 发 Java 应 用 ， 但 是 有 些 扩 展 是 针 对 构 建 J2EE 平 台 的 web 应用。Spring 框 架 目 标 是 简 化 Java 企 业 级 应 用 开 发 ， 并 通 过 POJO 为 基 础 的 编 程 模 型 促 进 良 好 的 编 程 习 惯 。 2、使用 Spring 框架的好处是什么？ 轻量：Spring 是轻量的，基本的版本大约 2MB。 控制反转：Spring 通过控制反转实现了松散耦合，对象们给出它们的依 赖，而不是创建或查找依赖的对象们。 面向切面的编程(AOP)：Spring 支持面向切面的编程，并且把应用业务 逻辑和系统服务分开。 容器：Spring 包含并管理应用中对象的生命周期和配置。 MVC 框架：Spring 的 WEB 框架是个精心设计的框架，是 Web 框架的 一个很好的替代品。事务管理：Spring 提供一个持续的事务管理接口，可以扩展到上至本地 事务下至全局事务（JTA）。 异常处理：Spring 提供方便的 API 把具体技术相关的异常（比如由 JDBC， Hibernate or JDO 抛出的）转化为一致的 unchecked 异常。 3、Spring 由哪些模块组成? 以 下 是 Spring 框 架 的 基 本 模 块 ：
-Core module Bean module Context module Expression Language module JDBC module ORM module OXM module Java Messaging Service(JMS) module Transaction module Web module Web-Servlet module Web-Struts module Web-Portlet module 4、核心容器（应用上下文) 模块。 这 是 基 本 的 Spring 模 块 ， 提 供 spring 框 架的 基 础功 能 ， BeanFactory 是 任 何 以 spring 为基础的应用的核心。Spring 框 架 建 立 在 此 模 块 之 上 ， 它 使 Spring 成 为 一 个 容 器 。 5、BeanFactory – BeanFactory 实现举例。 Bean 工 厂 是 工 厂 模 式 的 一 个 实 现 ， 提 供 了 控 制 反 转 功 能 ， 用 来 把 应 用 的 配 置 和 依 赖 从 正 真 的 应 用 代 码 中 分 离 。 最 常 用 的 BeanFactory 实 现 是 XmlBeanFactory 类 。
-6、XMLBeanFactory 最 常 用 的 就 是 org.springframework.beans.factory.xml.XmlBeanFactory ， 它 根 据 XML 文 件 中 的 定 义 加 载 beans。该容器从 XML 文 件 读 取 配 置 元 数 据 并 用 它 去 创 建 一 个 完 全 配 置 的 系 统 或 应 用 。 7、解释 AOP 模块 AOP 模 块 用 于 发 给 我 们 的 Spring 应 用 做 面 向 切 面 的 开 发 ， 很 多 支 持 由 AOP 联 盟 提 供 ， 这 样 就 确 保 了 Spring 和 其 他 AOP 框 架 的 共 通 性 。 这 个 模 块 将 元 数 据 编 程 引 入 Spring。 8、解释 JDBC 抽象和 DAO 模块。 通 过 使 用 JDBC 抽 象 和 DAO 模 块 ， 保 证 数 据 库 代 码 的 简 洁 ， 并 能 避 免 数 据 库 资 源 错 误 关 闭 导 致 的 问 题 ， 它 在 各 种 不 同 的 数 据 库 的 错 误 信 息 之 上 ， 提 供 了 一 个 统 一 的 异 常 访 问 层 。 它 还 利 用 Spring 的 AOP 模 块 给 Spring 应 用 中 的 对 象 提 供 事 务 管 理 服 务 。 9、解释对象/关系映射集成模块。 Spring 通 过 提 供 ORM 模块，支持我们在直接 JDBC 之 上 使 用 一 个 对 象 /关 系 映 射 映射(ORM)工具，Spring 支 持 集 成 主 流 的 ORM 框架，如 Hiberate,JDO 和 iBATIS SQL Maps。Spring 的 事 务 管 理 同 样 支 持 以 上 所 有 ORM 框 架 及 JDBC。 10、解释 WEB 模块。
-Spring 的 WEB 模 块 是 构 建 在 application context 模 块 基 础 之 上 ， 提 供 一 个 适 合 web 应 用 的 上 下 文 。 这 个 模 块 也 包 括 支 持 多 种 面 向 web 的任务，如透明地处理 多 个 文 件 上 传 请 求 和 程 序 级 请 求 参 数 的 绑 定 到 你 的 业 务 对 象 。 它 也 有 对 Jakarta Struts 的 支 持 。 12、Spring 配置文件 Spring 配 置 文 件 是 个 XML 文 件 ， 这 个 文 件 包 含 了 类 信 息 ， 描 述 了 如 何 配 置 它 们 ， 以 及 如 何 相 互 调 用 。 13、什么是 Spring IOC 容器？ Spring IOC 负 责 创 建 对 象 ， 管 理 对 象 （ 通 过 依 赖 注 入 （ DI） ， 装 配 对 象 ， 配 置 对 象 ， 并 且 管 理 这 些 对 象 的 整 个 生 命 周 期 。 14、IOC 的优点是什么？ IOC 或 依 赖 注 入 把 应 用 的 代 码 量 降 到 最 低 。 它 使 应 用 容 易 测 试 ， 单 元 测 试 不 再 需 要 单 例 和 JNDI 查 找 机 制 。 最 小 的 代 价 和 最 小 的 侵 入 性 使 松 散 耦 合 得 以 实 现 。 IOC 容 器 支 持 加 载 服 务 时 的 饿 汉 式 初 始 化 和 懒 加 载 。 15、ApplicationContext 通常的实现是什么? FileSystemXmlApplicationContext ：此容器从一个 XML 文件中加 载 beans 的定义，XML Bean 配置文件的全路径名必须提供给它的构造函数。
-ClassPathXmlApplicationContext：此容器也从一个 XML 文件中加 载 beans 的定义，这里，你需要正确设置 classpath 因为这个容器将在 classpath 里找 bean 配置。 WebXmlApplicationContext：此容器加载一个 XML 文件，此文件定 义了一个 WEB 应用的所有 bean。 16、Bean 工厂和 Application contexts 有什么区别？ Application contexts 提 供 一 种 方 法 处 理 文 本 消 息 ， 一 个 通 常 的 做 法 是 加 载 文 件 资 源 （ 比 如 镜 像 ） ， 它 们 可 以 向 注 册 为 监 听 器 的 bean 发 布 事 件 。 另 外 ， 在 容 器 或 容 器 内 的 对 象 上 执 行 的 那 些 不 得 不 由 bean 工 厂 以 程 序 化 方 式 处 理 的 操 作 ， 可 以 在 Application contexts 中 以 声 明 的 方 式 处 理 。 Application contexts 实 现 了 MessageSource 接 口 ， 该 接 口 的 实 现 以 可 插 拔 的 方 式 提 供 获 取 本 地 化 消 息 的 方 法 。 17、一个 Spring 的应用看起来象什么？ 一个定义了一些功能的接口。 这实现包括属性，它的 Setter ， getter 方法和函数等。 Spring AOP。 Spring 的 XML 配置文件。 使用以上功能的客户端程序。 依赖注入 18、什么是 Spring 的依赖注入？
+# 1 什么是 spring?
+
+​	Spring 是 个 java 企 业 级 应 用 的 开 源 开 发 框 架 。 Spring 主 要 用 来 开 发 Java 应 用 ， 但 是 有 些 扩 展 是 针 对 构 建 J2EE 平 台 的 web 应用。Spring 框 架 目 标 是 简 化 Java 企 业 级 应 用 开 发 ， 并 通 过 POJO 为 基 础 的 编 程 模 型 促 进 良 好 的 编 程 习 惯 。
+
+# 2  使用 Spring 框架的好处是什么？ 
+
+* 轻量：Spring 是轻量的，基本的版本大约 2MB。 
+* 控制反转：Spring 通过控制反转实现了松散耦合，对象们给出它们的依 赖，而不是创建或查找依赖的对象们。 
+* 面向切面的编程(AOP)：Spring 支持面向切面的编程，并且把应用业务 逻辑和系统服务分开。 
+* 容器：Spring 包含并管理应用中对象的生命周期和配置。 
+* MVC 框架：Spring 的 WEB 框架是个精心设计的框架，是 Web 框架的 一个很好的替代品。
+* 事务管理：Spring 提供一个持续的事务管理接口，可以扩展到上至本地 事务下至全局事务（JTA）。 
+* 异常处理：Spring 提供方便的 API 把具体技术相关的异常（比如由 JDBC， Hibernate or JDO 抛出的）转化为一致的 unchecked 异常。 
+
+# 3 Spring 由哪些模块组成?
+
+以 下 是 Spring 框 架 的 基 本 模 块 ：
+
+* Core module 
+* Bean module 
+* Context module 
+* Expression Language module 
+* JDBC module 
+* ORM module 
+* OXM module 
+* Java Messaging Service(JMS) module 
+* Transaction module 
+* Web module 
+* Web-Servlet module 
+* Web-Struts module 
+* Web-Portlet module 
+
+# 4 核心容器（应用上下文) 模块
+
+​	 这 是 基 本 的 Spring 模 块 ， 提 供 spring 框 架的 基 础功 能 ， BeanFactory 是 任 何 以 spring 为基础的应用的核心。Spring 框 架 建 立 在 此 模 块 之 上 ， 它 使 Spring 成 为 一 个 容 器 。 
+
+# 5 BeanFactory – BeanFactory 实现举例
+
+​	Bean 工 厂 是 工 厂 模 式 的 一 个 实 现 ， 提 供 了 控 制 反 转 功 能 ， 用 来 把 应 用 的 配 置 和 依 赖 从 正 真 的 应 用 代 码 中 分 离 。 
+
+​	最 常 用 的 BeanFactory 实 现 是 XmlBeanFactory 类 。
+
+# 6 XMLBeanFactory 
+
+​	最 常 用 的 就 是 org.springframework.beans.factory.xml.XmlBeanFactory ， 它 根 据 XML 文 件 中 的 定 义 加 载 beans。该容器从 XML 文 件 读 取 配 置 元 数 据 并 用 它 去 创 建 一 个 完 全 配 置 的 系 统 或 应 用 。 
+
+# 7 解释 AOP 模块
+
+​	AOP 模 块 用 于 发 给 我 们 的 Spring 应 用 做 面 向 切 面 的 开 发 ， 很 多 支 持 由 AOP 联 盟 提 供 ， 这 样 就 确 保 了 Spring 和 其 他 AOP 框 架 的 共 通 性 。 这 个 模 块 将 元 数 据 编 程 引 入 Spring。 
+
+# 8 解释 JDBC 抽象和 DAO 模块 
+
+​	通 过 使 用 JDBC 抽 象 和 DAO 模 块 ， 保 证 数 据 库 代 码 的 简 洁 ， 并 能 避 免 数 据 库 资 源 错 误 关 闭 导 致 的 问 题 ， 它 在 各 种 不 同 的 数 据 库 的 错 误 信 息 之 上 ， 提 供 了 一 个 统 一 的 异 常 访 问 层 。 它 还 利 用 Spring 的 AOP 模 块 给 Spring 应 用 中 的 对 象 提 供 事 务 管 理 服 务 。 
+
+# 9 解释对象/关系映射集成模块  
+
+​	Spring 通 过 提 供 ORM 模块，支持我们在直接 JDBC 之 上 使 用 一 个 对 象 /关 系 映 射 映射(ORM)工具，Spring 支 持 集 成 主 流 的 ORM 框架，如 Hiberate,JDO 和 iBATIS SQL Maps。Spring 的 事 务 管 理 同 样 支 持 以 上 所 有 ORM 框 架 及 JDBC。 
+
+# 10 解释 WEB 模块
+
+​	Spring 的 WEB 模 块 是 构 建 在 application context 模 块 基 础 之 上 ， 提 供 一 个 适 合 web 应 用 的 上 下 文 。 这 个 模 块 也 包 括 支 持 多 种 面 向 web 的任务，如透明地处理 多 个 文 件 上 传 请 求 和 程 序 级 请 求 参 数 的 绑 定 到 你 的 业 务 对 象 。 它 也 有 对 Jakarta Struts 的 支 持 。 
+
+# 11 Spring 配置文件
+
+​	 Spring 配 置 文 件 是 个 XML 文 件 ， 这 个 文 件 包 含 了 类 信 息 ， 描 述 了 如 何 配 置 它 们 ， 以 及 如 何 相 互 调 用 。 
+
+# 12 什么是 Spring IOC 容器？ 
+
+​	Spring IOC 负 责 创 建 对 象 ， 管 理 对 象 （ 通 过 依 赖 注 入 （ DI） ， 装 配 对 象 ， 配 置 对 象 ， 并 且 管 理 这 些 对 象 的 整 个 生 命 周 期 。 
+
+# 13 IOC 的优点是什么？ 
+
+​	IOC 或 依 赖 注 入 把 应 用 的 代 码 量 降 到 最 低 。 它 使 应 用 容 易 测 试 ， 单 元 测 试 不 再 需 要 单 例 和 JNDI 查 找 机 制 。 最 小 的 代 价 和 最 小 的 侵 入 性 使 松 散 耦 合 得 以 实 现 。 IOC 容 器 支 持 加 载 服 务 时 的 饿 汉 式 初 始 化 和 懒 加 载 。 
+
+# 14 ApplicationContext 通常的实现是什么?
+
+* FileSystemXmlApplicationContext ：此容器从一个 XML 文件中加 载 beans 的定义，XML Bean 配置文件的全路径名必须提供给它的构造函数。
+* ClassPathXmlApplicationContext：此容器也从一个 XML 文件中加 载 beans 的定义，这里，你需要正确设置 classpath 因为这个容器将在 classpath 里找 bean 配置。 
+* WebXmlApplicationContext：此容器加载一个 XML 文件，此文件定 义了一个 WEB 应用的所有 bean。 
+
+# 15 Bean 工厂和 Application contexts 有什么区别？ 
+
+​	Application contexts 提 供 一 种 方 法 处 理 文 本 消 息 ， 一 个 通 常 的 做 法 是 加 载 文 件 资 源 （ 比 如 镜 像 ） ， 它 们 可 以 向 注 册 为 监 听 器 的 bean 发 布 事 件 。 另 外 ， 在 容 器 或 容 器 内 的 对 象 上 执 行 的 那 些 不 得 不 由 bean 工 厂 以 程 序 化 方 式 处 理 的 操 作 ， 可 以 在 Application contexts 中 以 声 明 的 方 式 处 理 。 Application contexts 实 现 了 MessageSource 接 口 ， 该 接 口 的 实 现 以 可 插 拔 的 方 式 提 供 获 取 本 地 化 消 息 的 方 法 。 
+
+# 16 一个 Spring 的应用看起来象什么？
+
+	 * 一个定义了一些功能的接口。 
+	 * 这实现包括属性，它的 Setter ， getter 方法和函数等。 
+	 * Spring AOP。 
+	 * Spring 的 XML 配置文件。 
+	 * 使用以上功能的客户端程序。 
+	 * 依赖注入 
+
+18、什么是 Spring 的依赖注入？
 依 赖 注 入 ， 是 IOC 的 一 个 方 面 ， 是 个 通 常 的 概 念 ， 它 有 多 种 解 释 。 这 概 念 是 说 你 不 用 创 建 对 象 ， 而 只 需 要 描 述 它 如 何 被 创 建 。 你 不 在 代 码 里 直 接 组 装 你 的 组 件 和 服 务 ， 但 是 要 在 配 置 文 件 里 描 述 哪 些 组 件 需 要 哪 些 服 务 ， 之 后 一 个 容 器 （ IOC 容 器 ） 负 责 把 他 们 组 装 起 来 。 19、有哪些不同类型的 IOC（依赖注入）方式？ 构造器依赖注入：构造器依赖注入通过容器触发一个类的构造器来实现 的，该类有一系列参数，每个参数代表一个对其他类的依赖。 Setter 方法注入：Setter 方法注入是容器通过调用无参构造器或无参 static 工厂 方法实例化 bean 之后，调用该 bean 的 setter 方法，即实现了基 于 setter 的依赖注入。 20、哪种依赖注入方式你建议使用，构造器注入，还是 Setter 方法注入？ 你 两 种 依 赖 方 式 都 可 以 使 用 ， 构 造 器 注 入 和 Setter 方 法 注 入 。 最 好 的 解 决 方 案 是 用 构 造 器 参 数 实 现 强 制 依 赖 ， setter 方 法 实 现 可 选 依 赖 。 Spring Beans 21.什么是 Spring beans?
 Spring beans 是 那 些 形 成 Spring 应 用 的 主 干 的 java 对 象 。 它 们 被 Spring IOC 容 器 初 始 化 ， 装 配 ， 和 管 理 。 这 些 beans 通 过 容 器 中 配 置 的 元 数 据 创 建 。 比 如 ， 以 XML 文 件 中 的 形 式 定 义 。 Spring 框 架 定 义 的 beans 都 是 单 件 beans。在 bean tag 中 有 个 属 性 ” singleton”， 如果 它 被赋 为 TRUE，bean 就 是 单 件 ， 否 则 就 是 一 个 prototype bean。 默认 是 TRUE， 所 以 所 有 在 Spring 框 架 中 的 beans 缺 省 都 是 单 件 。 22、一个 Spring Bean 定义 包含什么？ 一 个 Spring Bean 的 定 义 包 含 容 器 必 知 的 所 有 配 置 元 数 据 ， 包 括 如 何 创 建 一 个 bean， 它 的 生 命 周 期 详 情 及 它 的 依 赖 。 23、如何给 Spring 容器提供配置元数据? 这 里 有 三 种 重 要 的 方 法 给 Spring 容 器 提 供 配 置 元 数 据 。 XML 配 置 文 件 。 基 于 注 解 的 配 置 。 基 于 java 的 配 置 。 24、你怎样定义类的作用域? 当 定 义 一 个 在 Spring 里 ， 我 们 还 能 给 这 个 bean 声 明 一 个 作 用 域 。 它 可 以 通 过 bean 定 义 中 的 scope 属性来定义。如，当 Spring 要 在 需 要 的 时 候 每 次 生 产 一 个 新 的 bean 实例，bean 的 scope 属 性 被 指 定 为 prototype。另一方面，一个 bean
 每 次 使 用 的 时 候 必 须 返 回 同 一 个 实 例 ， 这 个 bean 的 scope 属 性 必 须 设 为 singleton。 25、解释 Spring 支持的几种 bean 的作用域。 Spring 框 架 支 持 以 下 五 种 bean 的 作 用 域 ： singleton : bean 在每个 Spring ioc 容器中只有一个实例。 prototype：一个 bean 的定义可以有多个实例。 request：每次 http 请求都会创建一个 bean，该作用域仅在基于 web 的 Spring ApplicationContext 情形下有效。 session：在一个 HTTP Session 中，一个 bean 定义对应一个实例。该 作用域仅在基于 web 的 Spring ApplicationContext 情形下有效。 global-session：在一个全局的 HTTP Session 中，一个 bean 定义对应 一个实例。该作用域仅在基于 web 的 Spring ApplicationContext 情形下有效。 缺 省 的 Spring bean 的 作 用 域 是 Singleton. 26、Spring 框架中的单例 bean 是线程安全的吗? 不，Spring 框 架 中 的 单 例 bean 不 是 线 程 安 全 的 。 27、解释 Spring 框架中 bean 的生命周期。 Spring 容器 从 XML 文件中读取 bean 的定义，并实例化 bean。 Spring 根据 bean 的定义填充所有的属性。
