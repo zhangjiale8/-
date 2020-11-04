@@ -1853,3 +1853,567 @@ HotSpot默认的空间比例是 8:1
 
 ![image-20201104172004161](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104172004161.png)
 
+​	G1垃圾收集器也是以关注延迟为目标、服务器端应用的垃圾收集器，被HotSpot团队寄予取代CMS的使命，也是一个非常具有调优潜力的垃圾收集器。虽然G1也有类似CMS的收集动作：初始标记、并发标记、重新标记、清除、转移回收，并且也以一个串行收集器做担保机制，但单纯地以类似前三种的过程描述显得并不是很妥当。事实上，G1收集与以上三组收集器有很大不同：
+
+​	G1的设计原则是"首先收集尽可能多的垃圾(Garbage First)"。因此，G1并不会等内存耗尽(串行、并行)或者快耗尽(CMS)的时候开始垃圾收集，而是在内部采用了启发式算法，在老年代找出具有高收集收益的分区进行收集。同时G1可以根据用户设置的暂停时间目标自动调整年轻代和总堆大小，暂停目标越短年轻代空间越小、总空间就越大；
+​	G1采用内存分区(Region)的思路，将内存划分为一个个相等大小的内存分区，回收时则以分区为单位进行回收，存活的对象复制到另一个空闲分区中。由于都是以相等大小的分区为单位进行操作，因此G1天然就是一种压缩方案(局部压缩)；
+​	G1虽然也是分代收集器，但整个内存分区不存在物理上的年轻代与老年代的区别，也不需要完全独立的survivor(to space)堆做复制准备。G1只有逻辑上的分代概念，或者说每个分区都可能随G1的运行在不同代之间前后切换；
+​	G1的收集都是STW的，但年轻代和老年代的收集界限比较模糊，采用了混合(mixed)收集的方式。即每次收集既可能只收集年轻代分区(年轻代收集)，也可能在收集年轻代的同时，包含部分老年代分区(混合收集)，这样即使堆内存很大时，也可以限制收集范围，从而降低停顿。
+
+开启选项：-XX:+UseG1GC
+
+## 3.6 内存分配与回收策略和演示
+
+* 对象是在Eden区进行分配，如果Eden区没有足够空间时触发一次Minor GC 
+
+  JVM提供 -XX:+PrintGCDetails这个收集器日志参数
+
+* 占用内存较大的对象，对于虚拟机内存分配是一个坏消息，虚拟机提供了一个 -XX:PretenureSizeThreshold让大于这个设置的对象直接存入老年代。通过代码查看GC日志
+
+* 长期存入的对象会存入老年代。虚拟机给每个对象定义了一个Age年龄计数器,对象在Eden中出生并经过第一次Minor GC后仍然存活，对象年龄+1，此后每熬过一次Minor GC则对象年龄+1,当年龄增加到一定程度默认15岁，就会晋升到老年代。 可通过参数设置晋升年龄 -XX:MaxTenuringThreshold
+
+* Minor GC 和 Full GC的区别
+
+  * 新生代GC(Minor GC):指发生在新生代的垃圾收集动作，Minor GC非常频繁，一般回收速度也很快
+
+  * 老年代GC(Full GC/Major GC):指发生在老年代的GC，出现Full GC一般会伴随一次 Minor GC,Full GC的速度要慢很多，一般要比MinorGC慢10倍
+
+```Java
+public class TestGC {
+    private static final int _1MB = 1024*1024;
+    /**
+     * VM Args: -verbose:gc -Xms20m -Xmx20m -Xmn10m -
+     XX:+PrintGCDetails -XX:SurvivorRatio=8
+     */
+    public static void testAllocation(){
+        byte[]
+                allocation1,allocation2,allocation3,allocation4;
+        allocation1 = new byte[_1MB * 2];
+        allocation2 = new byte[_1MB * 3];
+        allocation3 = new byte[_1MB * 2];
+        allocation4 = new byte[_1MB * 3];
+    }
+    public static void main(String[] args) {
+        TestGC.testAllocation();
+    }
+}
+```
+
+### 3.6.1 通过代码查看GC日志
+
+```
+[GC (Allocation Failure) [PSYoungGen: 6489K-
+>872K(9216K)] 6489K->4976K(19456K), 0.0030214 secs]
+[Times: user=0.00 sys=0.00, real=0.00 secs]
+Heap
+PSYoungGen total 9216K, used 6313K
+[0x00000000ff600000, 0x0000000100000000,
+0x0000000100000000)
+eden space 8192K, 66% used
+[0x00000000ff600000,0x00000000ffb50678,0x00000000ffe00
+000)
+from space 1024K, 85% used
+[0x00000000ffe00000,0x00000000ffeda020,0x00000000fff00
+000)
+to space 1024K, 0% used
+[0x00000000fff00000,0x00000000fff00000,0x0000000100000
+000)
+ParOldGen total 10240K, used 4104K
+[0x00000000fec00000, 0x00000000ff600000,
+0x00000000ff600000)
+object space 10240K, 40% used
+[0x00000000fec00000,0x00000000ff002020,0x00000000ff600
+000)
+Metaspace used 3357K, capacity 4496K, committed
+4864K, reserved 1056768K
+class space used 367K, capacity 388K, committed
+512K, reserved 1048576K
+```
+
+### 3.6.2 分析结论：
+
+```
+GC：
+表明进行了一次垃圾回收，前面没有Full修饰，表明这是一次Minor GC,注意它不表示只GC新生代，并且现有的不管是新生代还是老年代都会STW。
+Allocation Failure：
+表明本次引起GC的原因是因为在年轻代中没有足够的空间能够存储新的数据了。
+PSYoungGen：
+表明本次GC发生在年轻代并且使用的是Parallel Scavenge垃圾收集器。不同的垃圾收集器显示的新生代老年代名字都不相同。
+6489K->4976K(19456K)：单位是KB
+三个参数分别为：GC前该内存区域(这里是年轻代)使用容量，GC后该内存区域使用容量，该内存区域总容量。
+0.0030214 secs：
+该内存区域GC耗时，单位是秒
+6489K->4976K(19456K)：
+三个参数分别为：堆区垃圾回收前的大小，堆区垃圾回收后的大小，堆区总大小。
+0.0025301 secs：
+该内存区域GC耗时，单位是秒
+[Times: user=0.04 sys=0.00, real=0.01 secs]：
+```
+
+
+
+# 四、JVM性能监控与故障处理工具
+
+## 4.1 JVM性能监控与故障处理工具-javap
+
+### 4.1.1 目标
+
+掌握和了解javap的语法
+
+### 4.1.2 分析
+
+javap的用法格式：
+javap <options> <classes>
+其中classes就是你要反编译的class文件。
+在命令行中直接输入javap或javap -help可以看到javap的options有如下选项：
+
+```
+-help --help -? 输出此用法消息
+-version 版本信息，其实是当前javap所在jdk的版本信息，不是class在哪个jdk下生成的。
+-v -verbose 输出附加信息（包括行号、本地变量表，反汇编等详细信息）
+-l 输出行号和本地变量表
+-public 仅显示公共类和成员
+-protected 显示受保护的/公共类和成员
+-package 显示程序包/受保护的/公共类 和成员(默认)
+-p -private 显示所有类和成员
+-c 对代码进行反汇编
+-s 输出内部类型签名
+-sysinfo 显示正在处理的类的系统信息 (路径,大小, 日期, MD5 散列)
+-constants 显示静态最终常量
+-classpath <path> 指定查找用户类文件的位置
+-bootclasspath <path> 覆盖引导类文件的位置
+```
+
+详细查看： https://www.jianshu.com/p/6a8997560b05
+
+## 4.2 JVM性能监控与故障处理工具-jps
+
+### 4.2.1 目标
+
+掌握和了解jps的使用
+
+### 4.2.2 分析
+
+jps（Java Virtual Machine Process Status Tool） 显示当前所有的java进程pid的命令。语法是：
+
+jps [options] [hostid]
+
+
+
+| 命令         | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| jps -q       | jps -q 仅输出VM标识符，不包括classname、jar、name、arguments 、main method |
+| jps -m       | 输出main method的参数                                        |
+| jps -l       | 输出完全的报名、应用主类名、jar的完全路径名                  |
+| jps -v       | 输出jvm参数                                                  |
+| jps -V       | 输出通过flag问卷传递到jvm中的参数                            |
+| jps -Joption | 传递参数到vm 例如：-J-Xms512m                                |
+
+## 4.3 JVM性能监控与故障处理工具-jstat
+
+### 4.3.1 目标
+
+掌握和了解jstat的使用
+
+### 4.3.2 分析
+
+jstat是监视Java虚拟机(JVM)统计信息
+
+用于监视虚拟机各种运行状态信息的命令行工具，如：类装载、内存、垃圾收集，是在没有图形页面纯文本控制台中定位运行期虚拟机性能问题的首选工具
+
+命令格式：
+jstat [options vmid [interval[s|ms] [count]]]
+如： jstat -gc 2764 250 20（每隔250毫秒查询一次进程2764的垃圾收集情况，一共查询20次）
+
+
+
+| 选项              | 作用                                                         |
+| ----------------- | ------------------------------------------------------------ |
+| -class            | 监视类装载、卸载数量、总空间以及类装载所耗费的时间           |
+| -gc               | 监视Java堆状况，包括Eden区、两个survivor区、老年代、元空间的容量、已用空间、GC时间合计等信息 |
+| -gccapacity       | 监视内容与-gc基本相同，但输出主要关注Java堆各个区域使用到的最大、最小空间 |
+| -gcutil           | 监视内容与-gc基本相同，但输出主要关注已使用空间占总空间的百分比 |
+| -gccause          | 与-gcutil功能一样，但是会额外输出导致上一次GC产生的原因      |
+| -gcnew            | 监视新生代GC状况                                             |
+| -gcnewcapacity    | 监视内容与-gcnew基本相同，输出主要关注使用到的最大、最小空间 |
+| -gcold            | 监视老年代状况                                               |
+| -gcoldcapacity    | 监视内容与-gcold基本相同，输出主要关注用到的最大、最小空间   |
+| -gcmetacapacity   | 输出元数据用到的最大、最小空间                               |
+| -compiler         | 输出JIT编译器编译过的方法、耗时等信息                        |
+| -printcompilation | 输出已经被JIT编译的方法                                      |
+
+## 4.4 其他
+
+### 4.4.1 jinfo:java配置信息工具
+
+```
+用于实时的查看和调整虚拟机各项参数
+命令格式：
+jinfo [option] vmid
+jinfo -flags 2734
+查看2723虚拟机的所有参数
+```
+
+### 4.4.2 jmap:java内存映像工具
+
+```
+用于生成堆转储快照，一般称为heapdump 或 dump文件，如果不使用jmap命令 也很暴力的通过：
+-XX:+HeapDumpOnOutOfMemoryError参数，可以让虚拟机出现OOM异常之后自动生成dump文件。
+命令格式：
+jmap [option] vmid
+//将904虚拟机的内存映像存储到当前文件夹的ddd.hprof文件中
+jmap -dump:format=b,file=ddd.hprof 904
+```
+
+### 4.4.3 jhat:虚拟机堆转储快照分析工具
+
+```
+与jmap搭配使用，用于分析dump文档，内置了http服务器，可以在浏览器中进行分析
+```
+
+### 4.4.4 jstack:java堆栈跟踪工具
+
+```
+用于生成虚拟机当前时刻的线程快照，线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合。用于分析线程死锁、死循环、请求外部资源时间过长等常见原因
+```
+
+## 4.5 JVM性能优化-CPU飙高排查实战
+
+项目准备：
+在linux系统模拟生产环境
+通过 nohup java -jar 项目jar.jar > 日志文件 & 启动项目
+
+```
+nohup java -jar springbootjvm.jar > nohup.out &
+让我们的springboot项目在后台运行，并且将运行日志输出到指定目录
+```
+
+生产环境排查 内存飙高,解决方案：
+
+* jps 查看进程
+* 访问项目即可 http://192.168.153.176:8767/loop 访问以后直接离开，其实后台的进程在死循环执行，这个时候需要排查
+* 使用top命令查看内存情况 .得到内存高的进程ID
+
+![image-20201104215512894](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104215512894.png)
+
+* top -p pid -H
+
+```
+top -p 2746 -H
+```
+
+![image-20201104215710317](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104215710317.png)
+
+* 查看最高的线程PID 因为是十进制的 需要进行16进制的转换
+
+```c
+#printf "%x" pid
+> printf "%x" 2764
+acc
+```
+
+* jstack pid > pid.log
+
+```
+> jstack 2746 > pid.log
+```
+
+/线程ID 模糊查询
+线程的状态是Runnable 代表线程正在运行
+
+![image-20201104215840294](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104215840294.png)
+
+## 4.6 JVM性能优化-死锁排查实战
+
+* 重新启动项目
+* 浏览器访问： http://192.168.153.176:8767/deadlock
+*  jstack pid 排查死锁。结果如下：
+
+![image-20201104220031754](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104220031754.png)
+
+上面也很清楚的看到问题出现的方法和那两个线程出现的问题和原因。
+
+## 4.7 JDK的可视化工具
+
+JDK除了提供大量的命令行工具外，还有两个功能强大的可视化工具：JConsole 和 VisualVM ,这两个工具是JDK的正式成员，功能非常强大！
+
+### 4.7.1 jconsole:Java监视与管理控制台
+
+通过jdk/bin目录下的 jconsole.exe启动JConsole,将会自动的搜索出本机的所有java虚拟机进程
+
+![image-20201104220525884](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104220525884.png)
+
+​	在本地进程中会列出本地 正在运行的java虚拟机列表，也可以远程连接其他服务器的java服务器,现在我们选择JConsoleTest1的进程，并且将堆的大小固定在100MB, 每个隔一小段时间向集合中装入128KB的数据，并注意JConsole监控中个数据指标的变化。
+
+```java
+/**
+ * VM Args: -Xms100m -Xmx100m -XX:+UseSerialGC
+ **/
+public class JConsoleTest1 {
+    static class OOMObject{
+        public byte[] placeholder = new
+                byte[128*1024];
+    }
+    public static void fillHeap(int num) throws
+            InterruptedException {
+        List<OOMObject> list = new
+                ArrayList<OOMObject>();
+        for (int i = 0; i < num; i++) {
+            Thread.sleep(100);
+            list.add(new OOMObject());
+        }
+        System.gc();
+        Thread.sleep(5000);
+    }
+    public static void main(String[] args) throws
+            InterruptedException {
+        fillHeap(500);
+        fillHeap(1000);
+    }
+}
+```
+
+![image-20201104220806150](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104220806150.png)
+
+![image-20201104220827831](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104220827831.png)
+
+### 4.7.2 VisualVM:多合一故障处理工具
+
+​	All in One Java Troubleshooting Tool ,目前为止JDK发布的最强大的运行监视和故障处理程序，除了基本的运行监视、故障处理之外，它还设计了可插拔的插件功能，可以根据需要添加一些优秀的插件时间更强大的功能。它的性能分析功能甚至比一些专业的收费工具也不逊色。
+
+双击JDK/bin目录下的 jvisualvm.exe,启动VisualVM工具
+
+![image-20201104221251353](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104221251353.png)
+
+左侧列表显示的是本地java虚拟机的活动列表，点击一个进程可以进入监控状态
+
+#### 4.7.2.1 概述页签展示了 当前监控java虚拟机的配置信息
+
+![image-20201104221507014](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104221507014.png)
+
+#### 4.7.2.2 监视页签展示了,CPU 类加载 堆 线程的基本监控信息
+
+![image-20201104221610664](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104221610664.png)
+
+#### 4.7.2.3 线程的信息，可以转储线程快照，也可以打开线程快照进行分析
+
+![image-20201104221654212](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104221654212.png)
+
+#### 4.7.2.4 抽样器，可以查看方法的时间占用情况，也可以查看内存占用的实时情况
+
+![image-20201104221817672](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104221817672.png)
+
+![image-20201104221834802](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104221834802.png)
+
+#### 4.7.2.5 内存情况，直观感受不同分代的内存使用情况，并且有详细实时的内存细节变化时间轴
+![image-20201104222021798](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104222021798.png)
+
+### 4.7.3 远程连接监控
+
+![image-20201104222132670](E:\学习笔记\mylearnnote\javaSE\JVM\images\image-20201104222132670.png)
+
+# 五、JVM调优案例分析与解决思路
+
+## 5.1 案例分析
+
+### 5.1.1 高性能硬件上的程序部署策略
+
+​	一个15万 PV/天左右的在线文档类型网站最近更换了硬件设备： 4个CPU、16G物理内存 操作系统为64位的Centos6.5的系统使用Tomcat作为服务器，所有硬件资源全部给这个不太大的网站使用，为了更好的使用硬件资源 选用了64位的JDK 并且通过 -Xmx 和 -Xms 参数将java堆固定在12GB.使用一段时间后发现效果仍不理想，网站会经常不定期的出现长时间失去响应的情况。
+​	使用监控工具监控发现，网站失去响应是由于Full GC造成的，虚拟机运行在Server模式下默认采用的是吞吐量优先的垃圾收集器，回收12G的堆 ，一次Full GC达14秒， 由于程序设计的关系，访问文档时要把文档从磁盘提取到内存系统中，导致内存中出现很多由文档序列化产生的大对象，这些大对象很多都进入了老年代，没有在新生代GC中清理掉，这种情况下虽然有12GB的堆，内存也很快被耗尽，由此导致每隔10多分钟出现一次10多秒中的无响应状态。
+
+#### 5.1.1.1 调优方案
+
+​	这种需要经常解析大对象到内存的情况，再大的堆也会很快装满;
+​	最终采用 5台 32位虚拟机部署Tomcat集群的方式。 每个tomcat设置的堆 为1.5GB，回收停顿时间大大降低另外建立了一个Nginx服务器将静态资源进行分离，大大减少Tomcat的处理请求数.
+​	文档服务器的压力主要集中在磁盘和内存访问，对CPU的敏感度较低，因此将垃圾收集器替换为CMS并发收集器大大利用了多核硬件的并发优势。部署方式调整后，服务没有在出现长时间的停顿，速度较之前有较大提升。
+
+### 5.1.2 堆外内存导致的溢出错误
+
+​	一个中小型的电子考试系统 ，为了实现客户端能实时的从服务器获取考试数据，系统使用了逆向AJAX技术，选用了CometD作为服务端推送框架，服务器内存为 8GB，运行在32位windows操作系统。 测试期间发现服务器不定期会出现内存溢出异常，32位的系统堆最多就1.6GB左右，在大也没什么效果。 采用监控工具监测堆中GC情况，发现GC并不频繁，各分代都显示内存稳定。
+​	最后，因为是不定期内存溢出，管理员等待溢出后查看Tomcat中的日志 发现异常显示为
+
+​	OutOfMemoryError:null
+​	在错误列表中Unsafe.allocationMemory
+​	java.nio.DirectByteBuffer
+
+​	后经过排查，原来是在直接内存中溢出的，虽然垃圾收集会对直接内存进行回收，但直接内存只能等待老年代在进行fullGC的时候顺便帮它回收一下，如果回收完一次 很快空间又满了，只能眼睁睁看着堆内还有很多内存空间，也只能报异常了。 Nio框架的操作会使用到直接内存。
+
+#### 5.1.2.1 解决方案
+
+最终通过 -XX:MaxDirectMemorySize 调大了直接内存的大小解决了问题
+
+### 5.1.3 执行外部命令导致系统缓慢
+
+
+
+### 5.1.4 不恰当的数据结构到时内存占用过大
+
+
+
+## 5.2 调优技巧汇总
+
+
+
+# 六、JVM相关面试题汇总
+
+## 6.1 说一下 JVM 的主要组成部分？及其作用？
+
+* 类加载器（ClassLoader）
+* 运行时数据区（Runtime Data Area）
+* 执行引擎（Execution Engine）
+* 本地库接口（Native Interface）
+* 组件的作用： 首先通过类加载器（ClassLoader）会把 Java 代码转换成字节码，运行时数据区（Runtime Data Area）再把字节码加载到内存中，而字节码文件只是 JVM 的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由 CPU 去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。
+
+## 6.2 说一下 JVM 运行时数据区？详细介绍下每个区域的作用?
+
+不同虚拟机的运行时数据区可能略微有所不同，但都会遵从 Java 虚拟机规
+范， Java 虚拟机规范规定的区域分为以下 5 个部分：
+
+* 程序计数器（Program Counter Register）：当前线程所执行的字节码的行号指示器，字节码解析器的工作是通过改变这个计数器的值，来选取下一条需要执行的字节码指令，分支、循环、跳转、异常处理、线程恢复等基础功能，都需要依赖这个计数器来完成；
+* Java 虚拟机栈（Java Virtual Machine Stacks）：用于存储局部变量表、操作数栈、动态链接、方法出口等信息；
+* 本地方法栈（Native Method Stack）：与虚拟机栈的作用是一样的，只不过虚拟机栈是服务 Java 方法的，而本地方法栈是为虚拟机调用 Native方法服务的；
+* Java 堆（Java Heap）：Java 虚拟机中内存最大的一块，是被所有线程共享的，几乎所有的对象实例都在这里分配内存；
+* 方法区（Methed Area）：用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译后的代码等数据。
+
+## 6.3 说一下堆栈的区别？
+
+* 功能方面：堆是用来存放对象的，栈是用来执行程序的。
+* 共享性：堆是线程共享的，栈是线程私有的。
+* 空间大小：堆大小远远大于栈。
+
+## 6.4 java中都有哪些类加载器
+
+* 启动类加载器（Bootstrap ClassLoader），是虚拟机自身的一部分，用来加载Java_HOME/lib/目录中的，或者被 -Xbootclasspath 参数所指定的路径中并且被虚拟机识别的类库；
+* 扩展类加载器（Extension ClassLoader）：负责加载\lib\ext目录或Java. ext. dirs系统变量指定的路径中的所有类库；
+* 应用程序类加载器（Application ClassLoader）。负责加载用户类路径（classpath）上的指定类库，我们可以直接使用这个类加载器。一般情况，如果我们没有自定义类加载器默认就是用这个加载器。
+* 其他类加载器：
+
+## 6.5 哪些情况会触发类加载机制
+
+以下情况会触发类的初始化：
+
+* 遇到new，getstatic，putstatic，invokestatic这4条指令；
+* 使用java.lang.reflect包的方法对类进行反射调用；
+* 初始化一个类的时候，如果发现其父类没有进行过初始化，则先初始化其父类（**注意！如果其父类是接口的话，则不要求初始化父类**）；
+* 当虚拟机启动时，用户需要指定一个要执行的主类（包含main方法的那个类），虚拟机会先初始化这个主类；
+* 当使用jdk1.7的动态语言支持时，如果一个java.lang.invoke.MethodHandle实例最后的解析结果REF_getstatic，REF_putstatic,REF_invokeStatic的方法句柄，并且这个方法句柄所对应的类没有进行过初始化，则先触发其类初始化；
+
+以下情况不会触发类的初始化：
+
+* 同类子类引用父类的静态字段，不会导致子类初始化。至于是否会触发子类的加载和验证，取决于虚拟机的具体实现；
+* 通过数组定义来引用类，也不会触发类的初始化；例如：People[] ps = new People[100];
+* 引用一个类的常量也不会触发类的初始化
+
+## 6.6 对象在内存中式如何分配的，如何被引用的
+
+https://www.cnblogs.com/zcr-xiaozhai/p/13816054.html
+
+https://www.cnblogs.com/tiancai/p/11699566.html、
+
+ ## 6.7 什么是双亲委派模型？
+
+​	如果一个类加载器收到了类加载的请求，它首先不会自己去加载这个类，而是把这个请求委派给父类加载器去完成，每一层的类加载器都是如此，这样所有的加载请求都会被传送到顶层的启动类加载器中，只有当父加载无法完成加载请求（它的搜索范围中没找到所需的类）时，子加载器才会尝试去加载类。
+
+## 6.8 说一下类装载的执行过程？
+
+类装载分为以下 5 个步骤：
+
+* 加载：根据查找路径找到相应的 class 文件然后导入；
+* 检查：检查加载的 class 文件的正确性；
+* 准备：给类中的静态变量分配内存空间；
+* 解析：虚拟机将常量池中的符号引用替换成直接引用的过程。符号引用就理解为一个标示，而在直接引用直接指向内存中的地址；
+* 初始化：对静态变量和静态代码块执行初始化工作。
+
+## 6.9 怎么判断对象是否可以被回收？
+
+一般有两种方法来判断：
+
+* 引用计数器：为每个对象创建一个引用计数，有对象引用时计数器 +1，引用被释放时计数 -1，当计数器为 0 时就可以被回收。它有一个缺点不能解决循环引用的问题；
+* 可达性分析：从 GC Roots 开始向下搜索，搜索所走过的路径称为引用链。当一个对象到 GC Roots 没有任何引用链相连时，则证明此对象是可以被回收的。
+
+## 6.10 哪些变量可以作为GC Roots
+
+https://blog.csdn.net/weichi7549/article/details/107467959
+
+* 虚拟机栈（栈帧中的本地变量表）中引用的对象；
+* 方法区中的类静态属性引用的对象；
+* 方法区中常量引用的对象；
+* 本地方法栈中JNI（即一般说的Native方法）中引用的对象
+
+## 6.11 Java 中都有哪些引用类型？
+
+* 强引用：发生 gc 的时候不会被回收。
+* 软引用：有用但不是必须的对象，在发生内存溢出之前会被回收。
+* 弱引用：有用但不是必须的对象，在下一次GC时会被回收。
+* 虚引用（幽灵引用/幻影引用）：无法通过虚引用获得对象，用PhantomReference 实现虚引用，虚引用的用途是在 gc 时返回一个通知。
+
+## 6.12 说一下 JVM 有哪些垃圾回收算法？
+
+* 标记-清除算法：标记无用对象，然后进行清除回收。
+
+  缺点：效率不高，无法清除垃圾碎片。
+
+* 标记-整理算法：标记无用对象，让所有存活的对象都向一端移动，然后直接清除掉端边界以外的内存。
+
+* 复制算法：按照容量划分二个大小相等的内存区域，当一块用完的时候将活着的对象复制到另一块上，然后再把已使用的内存空间一次清理掉。
+
+  缺点：内存使用率不高，只有原来的一半。
+
+* 分代算法：根据对象存活周期的不同将内存划分为几块，一般是新生代和老年代，新生代基本采用复制算法，老年代采用标记整理算法。
+
+## 6.13 说一下 JVM 有哪些垃圾回收器？
+
+* Serial：最早的单线程串行垃圾回收器。
+* Serial Old：Serial 垃圾回收器的老年版本，同样也是单线程的，可以作为 CMS 垃圾回收器的备选预案。
+* ParNew：是 Serial 的多线程版本。
+* Parallel 和 ParNew 收集器类似是多线程的，但 Parallel 是吞吐量优先的收集器，可以牺牲等待时间换取系统的吞吐量。
+* Parallel Old 是 Parallel 老生代版本，Parallel 使用的是复制的内存回收算法，Parallel Old 使用的是标记-整理的内存回收算法。
+* CMS：一种以获得最短停顿时间为目标的收集器，非常适用 B/S 系统。
+* G1：一种兼顾吞吐量和停顿时间的 GC 实现，是 JDK 9 以后的默认 GC选项。
+
+## 6.14 新生代垃圾回收器和老生代垃圾回收器都有哪些？有什么区别？
+
+- 新生代回收器：Serial、ParNew、Parallel Scavenge
+
+- 老年代回收器：Serial Old、Parallel Old、CMS
+
+- 整堆回收器：G1
+
+新生代垃圾回收器一般采用的是复制算法，复制算法的优点是效率高，缺点是内存利用率低；老年代回收器一般采用的是标记-整理的算法进行垃圾回收。
+
+## 6.15 简述分代垃圾回收器是怎么工作的？
+
+​	分代回收器有两个分区：老生代和新生代，新生代默认的空间占比总空间的1/3，老生代的默认占比是 2/3。
+​	新生代使用的是复制算法，新生代里有 3 个分区：Eden、ToSurvivor、From Survivor，它们的默认占比是 8:1:1，它的执行流程如下：
+
+* 把 Eden + From Survivor 存活的对象放入 To Survivor 区；
+* 清空 Eden 和 From Survivor 分区；
+* From Survivor 和 To Survivor 分区交换，From Survivor 变
+* To Survivor，To Survivor 变 From Survivor。
+* 每次在 From Survivor 到 To Survivor 移动时都存活的对象，年龄就 +1，当年龄到达 15（默认配置是 15）时，升级为老生代。大对象也会直接进入老生代。
+
+​	老生代当空间占用到达某个值之后就会触发全局垃圾收回，一般使用标记整理的执行算法。以上这些循环往复就构成了整个分代垃圾回收的整体执行流程。
+
+## 6.16 Minor GC与Full GC分别在什么时候发生？
+
+新生代内存不够用时候发生MGC也叫YGC，JVM内存不够的时候发生FGC
+
+## 6.17 说一下 JVM 调优的工具？
+
+JDK 自带了很多监控工具，都位于 JDK 的 bin 目录下，其中最常用的是jconsole 和 jvisualvm 这两款视图监控工具。
+
+* jconsole：用于对 JVM 中的内存、线程和类等进行监控；
+* jvisualvm：JDK 自带的全能分析工具，可以分析：内存快照、线程快照、程序死锁、监控内存的变化、gc 变化等
+
+## 6.18 常用的 JVM 调优的参数都有哪些？
+
+* -Xms2g：初始化推大小为 2g；
+* -Xmx2g：堆最大内存为 2g；
+* -XX:NewRatio=4：设置年轻的和老年代的内存比例为 1:4；
+* -XX:SurvivorRatio=8：设置新生代 Eden 和 Survivor 比例为8:2；
+* –XX:+UseParNewGC：指定使用 ParNew + Serial Old 垃圾回收器组合；
+* -XX:+UseParallelOldGC：指定使用 ParNew + ParNew Old 垃圾回收器组合；
+* -XX:+UseConcMarkSweepGC：指定使用 CMS + Serial Old 垃圾回收器组合；
+* -XX:+PrintGC：开启打印 gc 信息；
+* -XX:+PrintGCDetails：打印 gc 详细信息。
+
