@@ -57,7 +57,7 @@ RPC 指的是远程调用协议，也就是说两个服务器交互数据。
 
 # 6.Dubbo服务注册与发现的流程？
 
-![image-20201012154829839](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20201012154829839.png)
+![image-20201015095722209](E:\学习笔记\mylearnnote\web架构集\dubbo\images\image-20201015095722209.png)
 
 ## 6.1 流程说明：
 
@@ -123,7 +123,7 @@ Dubbo框架设计一共划分了10个层：
 
 # 12.Dubbo的服务治理？
 
-![image-20201012160245380](C:\Users\user\AppData\Roaming\Typora\typora-user-images\image-20201012160245380.png)
+![image-20201015103533377](E:\学习笔记\mylearnnote\web架构集\dubbo\images\image-20201015103533377.png)
 
 * 过多的服务URL配置困难
 * 负载均衡分配节点压力过大的情况下也需要部署集群
@@ -201,3 +201,5 @@ Dubbo超时时间设置有两种方式：
 # 26.dubbo和spring cloud的区别？
 
 ​	最大的区别：**Dubbo底层是使用Netty这样的NIO框架，是基于TCP协议传输的，配合以Hession序列化完成RPC通信**。而**SpringCloud是基于Http协议+Rest接口调用远程过程的通信**，相对来说，**Http请求会有更大的报文，占的带宽也会更多。但是REST相比RPC更为灵活**，服务提供方和调用方的依赖只依靠一纸契约，不存在代码级别的强依赖，这在强调快速演化的微服务环境下，显得更为合适，至于注重通信速度还是方便灵活性，具体情况具体考虑。
+
+![image-20201110070127864](E:\学习笔记\mylearnnote\web架构集\dubbo\images\image-20201110070127864.png)
