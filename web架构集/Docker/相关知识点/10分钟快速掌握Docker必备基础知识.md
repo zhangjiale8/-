@@ -205,7 +205,7 @@ docker run hello-world
 
 ## 6.1 镜像(Image)
 
-	### 6.1.1 什么是`Docker`的镜像？
+### 6.1.1 什么是`Docker`的镜像？
 
 ​	`Docker`本质上是一个运行在`Linux`操作系统上的应用，而`Linux`操作系统分为内核和用户空间，无论是`Centos`还是`Ubuntu`，都是在启动内核之后，通过挂载`Root`文件系统来提供用户空间的,**而Docker镜像就是一个Root文件系统**。
 
@@ -250,7 +250,6 @@ docker pull centos
 
 ```
 docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]
-复制代码
 ```
 
 拉取一个镜像，需要指定`Docker Registry`的地址和端口号，默认是`Docker Hub`，还需要指定仓库名和标签，仓库名和标签唯一确定一个镜像，而标签是可能省略，如果省略，则默认使用latest作为标签名，另外，仓库名则由作者名和软件名组成。
@@ -348,7 +347,6 @@ $ docker rm container_id
 ```
 # 删除所有容器
 docker rm $(docker ps -q)
-复制代码
 # 删除所有退出的容器
 docker container prune
 ```

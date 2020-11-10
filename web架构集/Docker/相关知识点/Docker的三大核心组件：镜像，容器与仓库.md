@@ -69,7 +69,6 @@ docker pull [OPTIONS] NAME[:TAG|@DIGEST]
 
 ```
 $ docker pull centos
-复制代码
 ```
 
 ## 1.4 查看本地镜像
@@ -225,7 +224,6 @@ FROM stratch
 ADD hello /
 # 执行
 CMD /hello
-复制代码
 ```
 
 ### 1.8.3 开始构建镜像
